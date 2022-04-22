@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>OpenLIME Class: Controller</title>
+	<title>OpenLIME Class: FocusContext</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -95,41 +95,21 @@
 		<div id="main">
 			
 
-	<h1 class="page-title">Class: Controller</h1>
+	<h1 class="page-title">Class: FocusContext</h1>
 <section>
 
 <header>
     
         <h2>
-        Controller
+        FocusContext
         </h2>
         
-            <div class="class-description"><p><strong>Controller</strong> is a virtual base class that handles user interaction via device events (mouse/touch events).
-It provides an abstract user interface to define interaction actions such as panning, pinching, tapping, etc...
-The actions are implemented by pre-defined callback functions:</p>
-<ul>
-<li><code>panStart(e)</code> intercepts the initial pan event (movement of the mouse after pressing a mouse button or moving a finger).
-The event is captured calling <code>e.preventDefault()</code>.</li>
-<li><code>panMove(e)</code> receives and handles the pan event.</li>
-<li><code>panEnd(e)</code> intercepts the final pan event (the user releases the left mouse button or removes his finger from the screen).</li>
-<li><code>pinchStart(e1, e2)</code> intercepts the initial pinch event (a continuous gesture that tracks the positions between the first two fingers that touch the screen).
-The event is captured calling <code>e1.preventDefault()</code>.</li>
-<li><code>pinchMove(e1,e2)</code> receives and handles the pinch event.</li>
-<li><code>pinchEnd(e1,e2)</code> intercepts the final pinch event (the user removes one of their two fingers from the screen).</li>
-<li><code>mouseWheel(e)</code> receives and handles the mouse wheel event (the user rotates the mouse wheel button).</li>
-<li><code>fingerSingleTap(e)</code> receives and handles the single-tap event (the user presses a mouse button quickly or touches the screen shortly with a finger).</li>
-<li><code>fingerDoubleTap(e)</code> receives and handles the double-tap event (the user quickly presses a mouse button twice or shortly touches the screen with a finger twice).</li>
-</ul>
-<p><code>e.preventDefault()</code> will capture the event and wont be propagated to other controllers.</p>
-<p>This class only describes user interactions by implementing actions or callbacks. A <strong>Controller</strong> works in concert with a <strong>PointerManager</strong> object
-that emits events and links them to actions.</p>
-<p>In the example below a <strong>ControllerPanZoom</strong> object (derived from <strong>Controller</strong>) is created and associated with the <code>pointerManager</code> of the <code>viewer</code>.</p>
-<pre class="prettyprint source"><code>const panzoom = new OpenLIME.ControllerPanZoom(viewer.camera, {
-    priority: -1000,
-    activeModifiers: [0, 1]
-});
-viewer.pointerManager.onEvent(panzoom);
-</code></pre></div>
+            <div class="class-description"><p>The FocusContext class is responsible for identifying a good Focus and Context situation.
+During interaction it distributes user inputs on lens, into camera and lens movement
+in order to keep the lens in focus and context situation, within the viewport, with enough
+space between the lens and the viewport boundaries, for both panning and zooming actions.
+It also computes a good transform given a lens to properly display the lens within
+the current viewport (used for stored annotations)</p></div>
         
     
 </header>
@@ -141,203 +121,19 @@ viewer.pointerManager.onEvent(panzoom);
         
 <hr>
 <dt>
-    <h4 class="name" id="Controller"><span class="type-signature"></span>new Controller( [options])</h4>
+    <h4 class="name" id="FocusContext"><span class="type-signature"></span>new FocusContext()</h4>
     
     
 </dt>
 <dd>
 
     
-    <div class="description">
-        <p>Instantiates a Controller object.</p>
-    </div>
-    
 
     
 
     
 
     
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Argument</th>
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>options</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>An object literal with controller parameters.</p>
-                <h6 class="method-params-label method-subparams-label">Properties</h6>
-                
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-        <th>Default</th>
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>panDelay</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-                <td class="default">
-                
-                    50
-                
-                </td>
-            
-
-            <td class="description last"><p>Inertial value of the movement in ms for panning movements.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>zoomDelay</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-                <td class="default">
-                
-                    200
-                
-                </td>
-            
-
-            <td class="description last"><p>A zoom event is smoothed over this delay in ms,</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>priority</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-                <td class="default">
-                
-                    0
-                
-                </td>
-            
-
-            <td class="description last"><p>Higher priority controllers are invoked first.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
     
 
     
@@ -375,8 +171,8 @@ viewer.pointerManager.onEvent(panzoom);
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="Controller.js.html">Controller.js</a>,
-				 <a href="Controller.js.html#sunlight-1-line-31">line 31</a>
+				<a href="FocusContext.js.html">FocusContext.js</a>,
+				 <a href="FocusContext.js.html#sunlight-1-line-11">line 11</a>
 			</li>
 		</ul>
 	</dd>
@@ -427,7 +223,7 @@ viewer.pointerManager.onEvent(panzoom);
             
 <hr>
 <dt>
-    <h4 class="name" id="modifierState"><span class="type-signature"></span>modifierState(e)</h4>
+    <h4 class="name" id=".adaptContextPosition"><span class="type-signature">&lt;static> </span>adaptContextPosition(viewport, focus, context)</h4>
     
     
 </dt>
@@ -435,16 +231,7 @@ viewer.pointerManager.onEvent(panzoom);
 
     
     <div class="description">
-        <p>Returns the modifier state of the event <code>e</code>. Modifiers are keyboard events that happens simultaneously
-with a device event (e.g. shift + left mouse button).
-The modifiers handled by a controller are:</p>
-<ul>
-<li>NoModifiers = 0</li>
-<li>CrtlModifier = 1</li>
-<li>ShiftModifier = 2</li>
-<li>AltModifier = 4</li>
-</ul>
-<p>The modifier state is the sum of values above corresponding to the key pressed (CTRL, SHIFT or ALT).</p>
+        <p>Translate context in order to put lens (focus) in focus and context condition</p>
     </div>
     
 
@@ -479,13 +266,61 @@ The modifiers handled by a controller are:</p>
 
         <tr>
             
-                <td class="name"><code>e</code></td>
+                <td class="name"><code>viewport</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Event</span>
+<span class="param-type">*</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>{x,y,dx,dy,w,h}</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>focus</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>lens : {position,radius}</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>context</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Transform.html">Transform</a></span>
 
 
 
@@ -540,8 +375,8 @@ The modifiers handled by a controller are:</p>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="Controller.js.html">Controller.js</a>,
-				 <a href="Controller.js.html#sunlight-1-line-66">line 66</a>
+				<a href="FocusContext.js.html">FocusContext.js</a>,
+				 <a href="FocusContext.js.html#sunlight-1-line-115">line 115</a>
 			</li>
 		</ul>
 	</dd>
@@ -566,30 +401,636 @@ The modifiers handled by a controller are:</p>
     
 
     
-    <h5>Returns:</h5>
+
     
-            
-<div class="param-desc">
-    <p>The modifier state.</p>
-</div>
+</dd>
 
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
         
-<span class="param-type">number</span>
+            
+<hr>
+<dt>
+    <h4 class="name" id=".adaptContextScale"><span class="type-signature">&lt;static> </span>adaptContextScale(viewport, focus, context)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Fix context scale to make projected lens fit within viewport.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>viewport</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
 
 
 
-    </dd>
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>{x, y, dx, dy, w, h}</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>focus</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>lens : {position,radius}. Contain current lens in dataset coords, which will be updated</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>context</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Transform.html">Transform</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Contain current transform, whose scale will be updated to keep lens in focus and context after scale</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="FocusContext.js.html">FocusContext.js</a>,
+				 <a href="FocusContext.js.html#sunlight-1-line-98">line 98</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
 </dl>
 
 
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
         
+            
+<hr>
+<dt>
+    <h4 class="name" id=".pan"><span class="type-signature">&lt;static> </span>pan(viewport, focus, context, delta, imageSize)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Subdivide pan amount (delta) between lens (focus) and camera transform (context).</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>viewport</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>{x, y, dx, dy, w, h}</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>focus</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>lens : {position,radius}. Contain current lens in dataset coords, which will be updated to translated lens</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>context</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Transform.html">Transform</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Contain current transform, which  will be updated to translated context</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>delta</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>amount of pan in dataset pixels</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>imageSize</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>{w,h} Size of the dataset width height (to clamp movement on boundaries)</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="FocusContext.js.html">FocusContext.js</a>,
+				 <a href="FocusContext.js.html#sunlight-1-line-21">line 21</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id=".scale"><span class="type-signature">&lt;static> </span>scale(camera, focus, context, dz)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Distribute scale between radius and camera scale in order to keep focus and context situation</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>camera</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Camera.html">Camera</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>focus</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>lens : {position,radius}. Contain current lens in dataset coords, which will be updated to translated lens</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>context</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Transform.html">Transform</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Contain current transform, which  will be updated to translated context</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>dz</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>amount of scale (which should multiply scale)</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="FocusContext.js.html">FocusContext.js</a>,
+				 <a href="FocusContext.js.html#sunlight-1-line-54">line 54</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 
     
 </dd>
