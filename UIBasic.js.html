@@ -42,7 +42,7 @@
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="Annotation.html">Annotation</a></li><li><a href="BoundingBox.html">BoundingBox</a></li><li><a href="Cache.html">Cache</a></li><li><a href="Camera.html">Camera</a></li><li><a href="Canvas.html">Canvas</a></li><li><a href="Controller.html">Controller</a></li><li><a href="Controller2D.html">Controller2D</a></li><li><a href="ControllerPanZoom.html">ControllerPanZoom</a></li><li><a href="EditorSvgAnnotation.html">EditorSvgAnnotation</a></li><li><a href="FocusContext.html">FocusContext</a></li><li><a href="Layer.html">Layer</a></li><li><a href="LayerAnnotation.html">LayerAnnotation</a></li><li><a href="LayerBRDF.html">LayerBRDF</a></li><li><a href="LayerCombiner.html">LayerCombiner</a></li><li><a href="LayerImage.html">LayerImage</a></li><li><a href="LayerLens.html">LayerLens</a></li><li><a href="LayerRTI.html">LayerRTI</a></li><li><a href="LayerSvgAnnotation.html">LayerSvgAnnotation</a></li><li><a href="Layout.html">Layout</a></li><li><a href="module-OpenLIME-OpenLIME.html">OpenLIME~OpenLIME</a></li><li><a href="PointerManager.html">PointerManager</a></li><li><a href="Raster.html">Raster</a></li><li><a href="Shader.html">Shader</a></li><li><a href="ShaderBRDF.html">ShaderBRDF</a></li><li><a href="ShaderCombiner.html">ShaderCombiner</a></li><li><a href="ShaderRTI.html">ShaderRTI</a></li><li><a href="Skin.html">Skin</a></li><li><a href="Transform.html">Transform</a></li><li><a href="UIBasic.html">UIBasic</a></li><li><a href="UIDialog.html">UIDialog</a></li><li><a href="Viewer.html">Viewer</a></li>
+					<li><a href="Annotation.html">Annotation</a></li><li><a href="BoundingBox.html">BoundingBox</a></li><li><a href="Cache.html">Cache</a></li><li><a href="Camera.html">Camera</a></li><li><a href="Canvas.html">Canvas</a></li><li><a href="Controller.html">Controller</a></li><li><a href="Controller2D.html">Controller2D</a></li><li><a href="ControllerPanZoom.html">ControllerPanZoom</a></li><li><a href="EditorSvgAnnotation.html">EditorSvgAnnotation</a></li><li><a href="FocusContext.html">FocusContext</a></li><li><a href="Layer.html">Layer</a></li><li><a href="LayerAnnotation.html">LayerAnnotation</a></li><li><a href="LayerAnnotationImage.html">LayerAnnotationImage</a></li><li><a href="LayerBRDF.html">LayerBRDF</a></li><li><a href="LayerCombiner.html">LayerCombiner</a></li><li><a href="LayerImage.html">LayerImage</a></li><li><a href="LayerLens.html">LayerLens</a></li><li><a href="LayerRTI.html">LayerRTI</a></li><li><a href="LayerSvgAnnotation.html">LayerSvgAnnotation</a></li><li><a href="Layout.html">Layout</a></li><li><a href="LayoutTiles.html">LayoutTiles</a></li><li><a href="module-OpenLIME-OpenLIME.html">OpenLIME~OpenLIME</a></li><li><a href="PointerManager.html">PointerManager</a></li><li><a href="Raster.html">Raster</a></li><li><a href="Shader.html">Shader</a></li><li><a href="ShaderBRDF.html">ShaderBRDF</a></li><li><a href="ShaderCombiner.html">ShaderCombiner</a></li><li><a href="ShaderRTI.html">ShaderRTI</a></li><li><a href="Skin.html">Skin</a></li><li><a href="Transform.html">Transform</a></li><li><a href="UIBasic.html">UIBasic</a></li><li><a href="UIDialog.html">UIDialog</a></li><li><a href="Viewer.html">Viewer</a></li>
 				</ul>
 			</li>
 			
@@ -63,7 +63,7 @@
 			<li class="dropdown">
 				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="global.html#crudCallback">crudCallback</a></li><li><a href="global.html#customStateCallback">customStateCallback</a></li><li><a href="global.html#simplify">simplify</a></li><li><a href="global.html#smooth">smooth</a></li><li><a href="global.html#smoothToPath">smoothToPath</a></li>
+					<li><a href="global.html#crudCallback">crudCallback</a></li><li><a href="global.html#customDataCallback">customDataCallback</a></li><li><a href="global.html#customStateCallback">customStateCallback</a></li><li><a href="global.html#selectedCallback">selectedCallback</a></li><li><a href="global.html#simplify">simplify</a></li><li><a href="global.html#smooth">smooth</a></li><li><a href="global.html#smoothToPath">smoothToPath</a></li>
 				</ul>
 			</li>
 			
@@ -192,6 +192,7 @@ class UIBasic {
 	 * @param {string} options.attribution Some information related to data attribution or credits.
 	 * @param {Array&lt;UIBasic#MenuEntry>} options.menu The interface menu structure.
 	 * @param {bool} options.enableTooltip=true Whether to enable tool button tooltip.
+	 * @param {bool} options.showLightDirections=false Whether to draw light direction vectors.
 	 */
 	constructor(viewer, options) {
 		//we need to know the size of the scene but the layers are not ready.
@@ -218,15 +219,21 @@ class UIBasic {
 			unit: null, //FIXME to be used with ruler
 			attribution: null,     //image attribution
 			lightcontroller: null,
+			showLightDirections: false,
 			enableTooltip: true,
 			menu: []
 		});
-
+		
 		Object.assign(this, options);
 		if (this.autoFit) //FIXME Check if fitCamera is triggered only if the layer is loaded. Is updateSize the right event?
 			this.viewer.canvas.addEvent('updateSize', () => this.viewer.camera.fitCameraBox(0));
 
-		this.panzoom = new ControllerPanZoom(this.viewer.camera, { priority: -1000 });
+		this.panzoom = new ControllerPanZoom(this.viewer.camera, {
+			priority: -1000,
+			activeModifiers: [0, 1]
+		});
+		this.viewer.pointerManager.onEvent(this.panzoom); //register wheel, doubleclick, pan and pinch
+		// this.viewer.pointerManager.on("fingerSingleTap", { "fingerSingleTap": (e) => { this.showInfo(e); }, priority: 10000 });
 
 		/*let element = entry.element;
 		let group = element.getAttribute('data-group');
@@ -273,17 +280,14 @@ class UIBasic {
 				layer.setLight([x, y], 0);
 			if(this.showLightDirections)
 				this.updateLightDirections(x, y);
-
 			}, { 
 				active: false, 
     			activeModifiers: [2, 4], 
     			control: 'light', 
-    			onPanStart: this.showLightDirections ? () => { //FIXME What is that?
-    				this.info.fade(true);
+    			onPanStart: this.showLightDirections ? () => {
     				Object.values(this.viewer.canvas.layers).filter(l => l.annotations != null).forEach(l => l.setVisible(false) );
     				this.enableLightDirections(true); } : null,
     			onPanEnd: this.showLightDirections ? () => { 
-    				this.info.fade(false);
     				Object.values(this.viewer.canvas.layers).filter(l => l.annotations != null).forEach(l => l.setVisible(true) );
     				this.enableLightDirections(false); } : null,
     			relative: true 
@@ -361,13 +365,6 @@ class UIBasic {
 			document.addEventListener('keydown', (e) => this.keyDown(e), false);
 			document.addEventListener('keyup', (e) => this.keyUp(e), false);
 
-			let panzoom = this.panzoom = new ControllerPanZoom(this.viewer.camera, {
-				priority: -1000,
-				activeModifiers: [0, 1]
-			});
-			this.viewer.pointerManager.onEvent(panzoom); //register wheel, doubleclick, pan and pinch
-			// this.viewer.pointerManager.on("fingerSingleTap", { "fingerSingleTap": (e) => { this.showInfo(e); }, priority: 10000 });
-
 			this.createMenu();
 			this.updateMenu();
 
@@ -393,13 +390,15 @@ class UIBasic {
 
 			
 
-			for (let l of Object.values(this.viewer.canvas.layers)) {
+			for(let l of Object.values(this.viewer.canvas.layers)) {
 				this.setLayer(l);
 				break;
 			}
 
-			if (this.actions.light.active == true)
+			if(this.actions.light &amp;&amp; this.actions.light.active)
 				this.toggleLightController();
+			if(this.actions.layers &amp;&amp; this.actions.layers.active)
+				this.toggleLayers();
 
 		})().catch(e => { console.log(e); throw Error("Something failed") });
 	}
@@ -785,7 +784,7 @@ class UIBasic {
  * The content of the dialog can be either an HTML text or a pre-built DOM element.
  * When hidden, a dialog emits a 'closed' event.
  */
-class UIDialog {
+class UIDialog { //FIXME standalone class
 	/**
 	 * Instatiates a UIDialog object.
 	 * @param {HTMLElement} container The HTMLElement on which the dialog is focused
@@ -801,6 +800,7 @@ class UIDialog {
 			signals: { 'closed': [] },
 			class: null,
 			visible: false,
+			backdropEvents: true
 		}, options);
 		this.create();
 	}
@@ -846,14 +846,12 @@ class UIDialog {
 		content.classList.add('openlime-dialog-content');
 		dialog.append(content);
 
-		if (this.modal) {
-			background.addEventListener('click', (e) => { if (e.target == background) this.hide(); });
+		if (this.modal) { //FIXME backdrown => backdrop
+			if(this.backdropEvents) background.addEventListener('click', (e) => { if (e.target == background) this.hide(); });
 			background.appendChild(dialog);
 			this.container.appendChild(background);
 			this.element = background;
-
 		} else {
-
 			this.container.appendChild(dialog);
 			this.element = dialog;
 		}
@@ -961,7 +959,7 @@ export { UIBasic, UIDialog }
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a>
 	
-		on Fri Apr 22nd 2022
+		on Tue May 31st 2022
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

@@ -42,7 +42,7 @@
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="Annotation.html">Annotation</a></li><li><a href="BoundingBox.html">BoundingBox</a></li><li><a href="Cache.html">Cache</a></li><li><a href="Camera.html">Camera</a></li><li><a href="Canvas.html">Canvas</a></li><li><a href="Controller.html">Controller</a></li><li><a href="Controller2D.html">Controller2D</a></li><li><a href="ControllerPanZoom.html">ControllerPanZoom</a></li><li><a href="EditorSvgAnnotation.html">EditorSvgAnnotation</a></li><li><a href="FocusContext.html">FocusContext</a></li><li><a href="Layer.html">Layer</a></li><li><a href="LayerAnnotation.html">LayerAnnotation</a></li><li><a href="LayerBRDF.html">LayerBRDF</a></li><li><a href="LayerCombiner.html">LayerCombiner</a></li><li><a href="LayerImage.html">LayerImage</a></li><li><a href="LayerLens.html">LayerLens</a></li><li><a href="LayerRTI.html">LayerRTI</a></li><li><a href="LayerSvgAnnotation.html">LayerSvgAnnotation</a></li><li><a href="Layout.html">Layout</a></li><li><a href="module-OpenLIME-OpenLIME.html">OpenLIME~OpenLIME</a></li><li><a href="PointerManager.html">PointerManager</a></li><li><a href="Raster.html">Raster</a></li><li><a href="Shader.html">Shader</a></li><li><a href="ShaderBRDF.html">ShaderBRDF</a></li><li><a href="ShaderCombiner.html">ShaderCombiner</a></li><li><a href="ShaderRTI.html">ShaderRTI</a></li><li><a href="Skin.html">Skin</a></li><li><a href="Transform.html">Transform</a></li><li><a href="UIBasic.html">UIBasic</a></li><li><a href="UIDialog.html">UIDialog</a></li><li><a href="Viewer.html">Viewer</a></li>
+					<li><a href="Annotation.html">Annotation</a></li><li><a href="BoundingBox.html">BoundingBox</a></li><li><a href="Cache.html">Cache</a></li><li><a href="Camera.html">Camera</a></li><li><a href="Canvas.html">Canvas</a></li><li><a href="Controller.html">Controller</a></li><li><a href="Controller2D.html">Controller2D</a></li><li><a href="ControllerPanZoom.html">ControllerPanZoom</a></li><li><a href="EditorSvgAnnotation.html">EditorSvgAnnotation</a></li><li><a href="FocusContext.html">FocusContext</a></li><li><a href="Layer.html">Layer</a></li><li><a href="LayerAnnotation.html">LayerAnnotation</a></li><li><a href="LayerAnnotationImage.html">LayerAnnotationImage</a></li><li><a href="LayerBRDF.html">LayerBRDF</a></li><li><a href="LayerCombiner.html">LayerCombiner</a></li><li><a href="LayerImage.html">LayerImage</a></li><li><a href="LayerLens.html">LayerLens</a></li><li><a href="LayerRTI.html">LayerRTI</a></li><li><a href="LayerSvgAnnotation.html">LayerSvgAnnotation</a></li><li><a href="Layout.html">Layout</a></li><li><a href="LayoutTiles.html">LayoutTiles</a></li><li><a href="module-OpenLIME-OpenLIME.html">OpenLIME~OpenLIME</a></li><li><a href="PointerManager.html">PointerManager</a></li><li><a href="Raster.html">Raster</a></li><li><a href="Shader.html">Shader</a></li><li><a href="ShaderBRDF.html">ShaderBRDF</a></li><li><a href="ShaderCombiner.html">ShaderCombiner</a></li><li><a href="ShaderRTI.html">ShaderRTI</a></li><li><a href="Skin.html">Skin</a></li><li><a href="Transform.html">Transform</a></li><li><a href="UIBasic.html">UIBasic</a></li><li><a href="UIDialog.html">UIDialog</a></li><li><a href="Viewer.html">Viewer</a></li>
 				</ul>
 			</li>
 			
@@ -63,7 +63,7 @@
 			<li class="dropdown">
 				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="global.html#crudCallback">crudCallback</a></li><li><a href="global.html#customStateCallback">customStateCallback</a></li><li><a href="global.html#simplify">simplify</a></li><li><a href="global.html#smooth">smooth</a></li><li><a href="global.html#smoothToPath">smoothToPath</a></li>
+					<li><a href="global.html#crudCallback">crudCallback</a></li><li><a href="global.html#customDataCallback">customDataCallback</a></li><li><a href="global.html#customStateCallback">customStateCallback</a></li><li><a href="global.html#selectedCallback">selectedCallback</a></li><li><a href="global.html#simplify">simplify</a></li><li><a href="global.html#smooth">smooth</a></li><li><a href="global.html#smoothToPath">smoothToPath</a></li>
 				</ul>
 			</li>
 			
@@ -132,10 +132,12 @@ import { BoundingBox } from './BoundingBox.js'
  *      });
  *      viewer.addLayer('coin1', layer1);
  */
+
+//FIXME: prefetchborder and mipmapbias should probably go into layout
 class Layer {
 	/**
 	* Creates a Layer. Additionally, an object literal with Layer `options` can be specified.
-    * Signals are triggered when the layer is ready (i.e. completely initialized) or if its state variables have been updated (a redraw is needed).
+	* Signals are triggered when the layer is ready (i.e. completely initialized) or if its state variables have been updated (a redraw is needed).
 	* @param {Object} [options]
 	* @param {(string|Layout)} options.layout='image' The layout (the format of the input raster images).
 	* @param {string} options.type A string identifier to select the specific derived layer class to instantiate.
@@ -214,7 +216,7 @@ class Layer {
 			requested: {},  //tiles requested.
 		});
 		Object.assign(this, options);
-		if(this.sourceLayer) this.tiles = this.sourceLayer.tiles; //FIXME avoid tiles duplication
+		if (this.sourceLayer) this.tiles = this.sourceLayer.tiles; //FIXME avoid tiles duplication
 
 		this.transform = new Transform(this.transform);
 
@@ -227,22 +229,52 @@ class Layer {
 	}
 
 	/**
- 	* Adds a Layer Event
- 	* @param {string} event A label to identify the event.
- 	* @param {*} callback The event callback function.
+	  * Adds a Layer Event
+	  * @param {string} event A label to identify the event.
+	  * @param {*} callback The event callback function.
 	*/
 	addEvent(event, callback) {
 		this.signals[event].push(callback);
 	}
 
 	/*
- 	* Emits an event (running all the callbacks referred to it).
- 	* @param {*} event The event name
- 	*/
-	/** @ignore */ 
+	  * Emits an event (running all the callbacks referred to it).
+	  * @param {*} event The event name
+	  */
+	/** @ignore */
 	emit(event, ...parameters) {
 		for (let r of this.signals[event])
 			r(...parameters);
+	}
+
+	/**
+	 * Sets the state of the layer 
+	 */
+	setState(state, dt, easing = 'linear') {
+		if ('controls' in state)
+			for (const [key, v] of Object.entries(state.controls)) {
+				this.setControl(key, v, dt, easing);
+			}
+		if ('mode' in state &amp;&amp; state.mode) {
+			this.setMode(state.mode);
+		}
+	}
+
+	/**
+	 * Gets the state variables of the layer.
+	 * @return {Object} An object with state variables 
+	 */
+	getState(stateMask = null) {
+		const state = {};
+		state.controls = {};
+		for (const [key, v] of Object.entries(this.controls)) {
+			if (!stateMask || ('controls' in stateMask &amp;&amp; key in stateMask.controls))
+				state.controls[key] = v.current.value;
+		}
+		if (!stateMask || 'mode' in stateMask)
+			if (this.getMode())
+				state.mode = this.getMode();
+		return state;
 	}
 
 	/** @ignore */
@@ -295,8 +327,10 @@ class Layer {
 	 * @returns {string} the shader mode
 	 */
 	getMode() {
-		return this.shader.mode;
-	}
+		if (this.shader)
+			return this.shader.mode;
+		return null;
+	}	
 
 	/**
 	 * Gets an arrays of all the modes implemented in the current shader.
@@ -385,12 +419,12 @@ class Layer {
 	}
 
 	/**
- 	* Computes the merge bounding box of all the 'layers`
- 	* @param {Layer[]} layers 
- 	* @param {bool} discardHidden Whether hidden layers are not to be included in the computation.
- 	* @returns {BoundingBox} The bounding box 
+	  * Computes the merge bounding box of all the 'layers`
+	  * @param {Layer[]} layers 
+	  * @param {bool} discardHidden Whether hidden layers are not to be included in the computation.
+	  * @returns {BoundingBox} The bounding box 
 	* @static 
- 	*/
+	  */
 	static computeLayersBBox(layers, discardHidden) {
 		if (layers == undefined || layers == null) {
 			console.log("ASKING BBOX INFO ON NO LAYERS");
@@ -412,7 +446,7 @@ class Layer {
 	 * @param {*} name The name of the control.
 	 * return {*} The control
 	 */
-	 getControl(name) {
+	getControl(name) {
 		let control = this.controls[name] ? this.controls[name] : null;
 		if (control) {
 			let now = performance.now();
@@ -427,10 +461,10 @@ class Layer {
 	 * @param {*} value The value for initialization.
 	 */
 	addControl(name, value) {
-		if(this.controls[name])
+		if (this.controls[name])
 			throw new Error(`Control "$name" already exist!`);
 		let now = performance.now();
-		this.controls[name] = { 'source':{ 'value': value, 't': now }, 'target':{ 'value': value, 't': now }, 'current':{ 'value': value, 't': now } };
+		this.controls[name] = { 'source': { 'value': value, 't': now }, 'target': { 'value': value, 't': now }, 'current': { 'value': value, 't': now }, 'easing': 'linear' };
 	}
 
 	/**
@@ -439,7 +473,7 @@ class Layer {
 	 * @param {*} value The value for initialization.
 	 * @param {time} dt Duration of the interpolation (0=no interpolation).
 	 */
-	setControl(name, value, dt) { //When are created?
+	setControl(name, value, dt, easing = 'linear') { //When are created?
 		let now = performance.now();
 		let control = this.controls[name];
 		this.interpolateControl(control, now);
@@ -449,6 +483,8 @@ class Layer {
 
 		control.target.value = [...value];
 		control.target.t = now + dt;
+
+		control.easing = easing;
 
 		this.emit('update');
 	}
@@ -482,9 +518,13 @@ class Layer {
 			return done;
 		}
 
-		let t = (target.t - source.t);
-		let tt = (time - source.t) / t;
-		let st = (target.t - time) / t;
+		let dt = (target.t - source.t);
+		let tt = (time - source.t) / dt;
+		switch (control.easing) {
+			case 'ease-out': tt = 1 - Math.pow(1 - tt, 2); break;
+			case 'ease-in-out': tt = tt &lt; 0.5 ? 2 * tt * tt : 1 - Math.pow(-2 * tt + 2, 2) / 2; break;
+		}
+		let st = 1 - tt;
 
 		current.value = [];
 		for (let i = 0; i &lt; source.value.length; i++)
@@ -534,33 +574,29 @@ class Layer {
 
 		//		find which quads to draw and in case request for them
 		transform = this.transform.compose(transform);
-		let needed = this.layout.neededBox(viewport, transform, 0, this.mipmapBias);
-		let torender = this.toRender(needed);
+		let available = this.layout.available(viewport, transform, 0, this.mipmapBias, this.tiles);
 
 		let matrix = transform.projectionMatrix(viewport);
 		this.gl.uniformMatrix4fv(this.shader.matrixlocation, this.gl.FALSE, matrix);
 
-		for (let index in torender) {
-			let tile = torender[index];
-			//			if(tile.complete)
-			this.drawTile(torender[index]);
-		}
+		this.updateAllTileBuffers(available);
 
-		//		gl.uniform1f(t.opacitylocation, t.opacity);
+		let i = 0;
+		for (let tile of Object.values(available)) {
+			//			if(tile.complete)
+			this.drawTile(tile, i);
+			++i;
+		}
 		return done;
 	}
-
+	
 	/** @ignore */
-	drawTile(tile) {
-		let tiledata = this.tiles.get(tile.index);
-		if (tiledata.missing != 0)
+	drawTile(tile, index) {
+		//let tiledata = this.tiles.get(tile.index);
+		if (tile.missing != 0)
 			throw "Attempt to draw tile still missing textures"
 
-		//TODO might want to change the function to oaccept tile as argument
-		let c = this.layout.tileCoords(tile.level, tile.x, tile.y);
-
-		//update coords and texture buffers
-		this.updateTileBuffers(c.coords, c.tcoords);
+		//coords and texture buffers updated once for all tiles from main draw() call
 
 		//bind textures
 		let gl = this.gl;
@@ -568,9 +604,14 @@ class Layer {
 			let id = this.shader.samplers[i].id;
 			gl.uniform1i(this.shader.samplers[i].location, i);
 			gl.activeTexture(gl.TEXTURE0 + i);
-			gl.bindTexture(gl.TEXTURE_2D, tiledata.tex[id]);
+			gl.bindTexture(gl.TEXTURE_2D, tile.tex[id]);
 		}
-		gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
+        const byteOffset = this.getTileByteOffset(index);
+		gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, byteOffset);
+	}
+
+	getTileByteOffset(index) {
+		return index * 6 * 2;
 	}
 
 	/* given the full pyramid of needed tiles for a certain bounding box, 
@@ -579,7 +620,7 @@ class Layer {
 	 *  drawing incomplete tiles enhance the resolution early at the cost of some overdrawing and problems with opacity.
 	 */
 	/** @ignore */
-	toRender(needed) {
+	/*toRender(needed) {
 
 		let torender = {}; //array of minlevel, actual level, x, y (referred to minlevel)
 		let brothers = {};
@@ -594,7 +635,7 @@ class Layer {
 					let d = minlevel - level;
 					let index = this.layout.index(level, x >> d, y >> d);
 					if (this.tiles.has(index) &amp;&amp; this.tiles.get(index).missing == 0) {
-						torender[index] = { index: index, level: level, x: x >> d, y: y >> d, complete: true };
+						torender[index] = this.tiles.get(index); //{ index: index, level: level, x: x >> d, y: y >> d, complete: true };
 						break;
 					} else {
 						let sx = (x >> (d + 1)) &lt;&lt; 1;
@@ -613,15 +654,17 @@ class Layer {
 				torender[index].complete = false;
 		}
 		return torender;
-	}
+	}*/
 
 	/** @ignore */
+	// Update tile vertex and texture coords.
+	// Currently called by derived classes 
 	updateTileBuffers(coords, tcoords) {
 		let gl = this.gl;
 		//TODO to reduce the number of calls (probably not needed) we can join buffers, and just make one call per draw! (except the bufferData, which is per node)
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.vbuffer);
 		gl.bufferData(gl.ARRAY_BUFFER, coords, gl.STATIC_DRAW);
-
+		//FIXME this is not needed every time.
 		gl.vertexAttribPointer(this.shader.coordattrib, 3, gl.FLOAT, false, 0, 0);
 		gl.enableVertexAttribArray(this.shader.coordattrib);
 
@@ -632,6 +675,50 @@ class Layer {
 		gl.enableVertexAttribArray(this.shader.texattrib);
 	}
 
+	
+	/** @ignore */
+	// Update tile vertex and texture coords of all the tiles in a single VBO
+	updateAllTileBuffers(tiles) {
+		let gl = this.gl;
+
+		//use this.tiles instead.
+		let N = Object.values(tiles).length;
+		if (N == 0) return;
+		
+		const szV = 12;
+		const szT = 8;
+		const szI = 6;
+		const iBuffer = new Uint16Array(szI * N);
+		const vBuffer = new Float32Array(szV * N);
+		const tBuffer = new Float32Array(szT * N);
+		let i = 0;
+		for (let tile of Object.values(tiles)) {
+			let c = this.layout.tileCoords(tile);
+			vBuffer.set(c.coords, i * szV);
+			tBuffer.set(c.tcoords, i * szT);
+			
+			const off = i * 4;
+			tile.indexBufferByteOffset = 2*i*szI;
+			iBuffer.set([off+3, off+2, off+1, off+3, off+1, off+0], i * szI);
+			++i;
+		}
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibuffer);
+		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, iBuffer, gl.STATIC_DRAW);
+
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.vbuffer);
+		gl.bufferData(gl.ARRAY_BUFFER, vBuffer, gl.STATIC_DRAW);
+
+		gl.vertexAttribPointer(this.shader.coordattrib, 3, gl.FLOAT, false, 0, 0);
+		gl.enableVertexAttribArray(this.shader.coordattrib);
+
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.tbuffer);
+		gl.bufferData(gl.ARRAY_BUFFER, tBuffer, gl.STATIC_DRAW);
+
+		gl.vertexAttribPointer(this.shader.texattrib, 2, gl.FLOAT, false, 0, 0);
+		gl.enableVertexAttribArray(this.shader.texattrib);
+		
+	}
+
 	/*
 	 *  If layout is ready and shader is assigned, creates or update tiles to keep track of what is missing.
 	 */
@@ -640,18 +727,8 @@ class Layer {
 		if (!this.shader || !this.layout || this.layout.status != 'ready')
 			return;
 
-		// if(!this.tiles.size) {
-		// 	 this.tiles = JSON.parse(JSON.stringify(this.layout.tiles));
-		// 	 for(let tile of this.tiles) {
-		// 	 	tile.tex = new Array(this.shader.samplers.length);
-		// 	 	tile.missing = this.shader.samplers.length;
-		//  		tile.size = 0;
-		//  	}
-		//  	return;
-		// }
-
 		for (let tile of this.tiles) {
-			tile.missing = this.shader.samplers.length;;
+			tile.missing = this.shader.samplers.length;
 			for (let sampler of this.shader.samplers) {
 				if (tile.tex[sampler.id])
 					tile.missing--;
@@ -715,34 +792,49 @@ class Layer {
 		if (typeof (this.layout) != 'object')
 			throw "AH!";
 
-		let needed = this.layout.neededBox(viewport, transform, this.prefetchBorder, this.mipmapBias);
-		if (this.previouslyNeeded &amp;&amp; this.sameNeeded(this.previouslyNeeded, needed))
-			return;
-		this.previouslyNeeded = needed;
+		/*let needed = this.layout.needed(viewport, transform, this.prefetchBorder, this.mipmapBias, this.tiles);
+
 
 		this.queue = [];
 		let now = performance.now();
-		//look for needed nodes and prefetched nodes (on the pos destination
 		let missing = this.shader.samplers.length;
 
-		for (let level = 0; level &lt;= needed.level; level++) {
-			let box = needed.pyramid[level];
-			let tmp = [];
-			for (let y = box.yLow; y &lt; box.yHigh; y++) {
-				for (let x = box.xLow; x &lt; box.xHigh; x++) {
-					let index = this.layout.index(level, x, y);
-					let tile = this.tiles.get(index) || { index, x, y, missing, tex: [], level };
-					tile.time = now;
-					tile.priority = needed.level - level;
-					if (tile.missing != 0 &amp;&amp; !this.requested[index])
-						tmp.push(tile);
-				}
-			}
-			let c = box.center();
-			//sort tiles by distance to the center TODO: check it's correct!
-			tmp.sort(function (a, b) { return Math.abs(a.x - c[0]) + Math.abs(a.y - c[1]) - Math.abs(b.x - c[0]) - Math.abs(b.y - c[1]); });
-			this.queue = this.queue.concat(tmp);
-		}
+
+		for(let tile of needed) {
+			if(tile.missing === null)
+				tile.missing = missing;
+			if (tile.missing != 0 &amp;&amp; !this.requested[index])
+				tmp.push(tile);
+		} */
+		this.queue = this.layout.needed(viewport, transform, this.prefetchBorder, this.mipmapBias, this.tiles);
+		/*		let needed = this.layout.neededBox(viewport, transform, this.prefetchBorder, this.mipmapBias);
+				if (this.previouslyNeeded &amp;&amp; this.sameNeeded(this.previouslyNeeded, needed))
+					return;
+				this.previouslyNeeded = needed;
+		
+				this.queue = [];
+				let now = performance.now();
+				//look for needed nodes and prefetched nodes (on the pos destination
+				let missing = this.shader.samplers.length;
+		
+				for (let level = 0; level &lt;= needed.level; level++) {
+					let box = needed.pyramid[level];
+					let tmp = [];
+					for (let y = box.yLow; y &lt; box.yHigh; y++) {
+						for (let x = box.xLow; x &lt; box.xHigh; x++) {
+							let index = this.layout.index(level, x, y);
+							let tile = this.tiles.get(index) || { index, x, y, missing, tex: [], level };
+							tile.time = now;
+							tile.priority = needed.level - level;
+							if (tile.missing != 0 &amp;&amp; !this.requested[index])
+								tmp.push(tile);
+						}
+					}
+					let c = box.center();
+					//sort tiles by distance to the center TODO: check it's correct!
+					tmp.sort(function (a, b) { return Math.abs(a.x - c[0]) + Math.abs(a.y - c[1]) - Math.abs(b.x - c[0]) - Math.abs(b.y - c[1]); });
+					this.queue = this.queue.concat(tmp);
+				}*/
 		Cache.setCandidates(this);
 	}
 
@@ -787,7 +879,7 @@ class Layer {
 			if (callback) callback(tile.size);
 			return;
 		}
-
+		tile.missing = this.shader.samplers.length;
 		for (let sampler of this.shader.samplers) {
 
 			let raster = this.rasters[sampler.id];
@@ -796,7 +888,7 @@ class Layer {
 			if (this.layout.type == "image") {
 				this.layout.width = raster.width;
 				this.layout.height = raster.height;
-				this.layout.initBoxes();
+				this.layout.emit('updateSize');
 			}
 			tile.size += size;
 			tile.tex[sampler.id] = tex;
@@ -808,7 +900,6 @@ class Layer {
 			}
 		}
 	}
-
 }
 
 Layer.prototype.types = {}
@@ -861,7 +952,7 @@ export { Layer }
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a>
 	
-		on Fri Apr 22nd 2022
+		on Tue May 31st 2022
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

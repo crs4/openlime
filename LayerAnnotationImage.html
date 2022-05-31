@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>OpenLIME Class: OpenLIME</title>
+	<title>OpenLIME Class: LayerAnnotationImage</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -95,19 +95,17 @@
 		<div id="main">
 			
 
-	<h1 class="page-title">Class: OpenLIME</h1>
+	<h1 class="page-title">Class: LayerAnnotationImage</h1>
 <section>
 
 <header>
     
         <h2>
-            <span class="ancestors"><a href="module-OpenLIME.html">OpenLIME</a>~</span>
-        
-        OpenLIME
+        LayerAnnotationImage
         </h2>
         
-            <div class="class-description"><p>Manages an OpenLIME viewer functionality on a canvas
-how do I write more substantial documentation.</p></div>
+            <div class="class-description"><p>Class which extend LayerAnnotation. Support Image Annotations.
+Each annotation corresponds to a tile (currently single resolution)</p></div>
         
     
 </header>
@@ -119,365 +117,12 @@ how do I write more substantial documentation.</p></div>
         
 <hr>
 <dt>
-    <h4 class="name" id="OpenLIME"><span class="type-signature"></span>new OpenLIME(div, options, options)</h4>
+    <h4 class="name" id="LayerAnnotationImage"><span class="type-signature"></span>new LayerAnnotationImage()</h4>
     
     
 </dt>
 <dd>
 
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>div</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">div</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>of the DOM or selector (es. '#canvasid'), or a canvas.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>options</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>is a url to a JSON describing the viewer content</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>options</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>is a JSON describing the viewer content</p>
-<ul>
-<li><strong>animate</strong>: default <em>true</em>, calls requestAnimation() and manages refresh.</li>
-<li><strong>background</strong>: css style for background (overwrites css if present)</li>
-</ul></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="OpenLIME.js.html">OpenLIME.js</a>,
-				 <a href="OpenLIME.js.html#sunlight-1-line-35">line 35</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <h5>Example</h5>
-        
-    <pre class="sunlight-highlight-javascript">const lime = new OpenLIME.OpenLIME(&#x27;.openlime&#x27;);
-// .openlime is the class of a DIV element in the DOM.</pre>
-
-
-    
-</dd>
-
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        <dl>
-            
-<hr>
-<dt>
-    <h4 class="name" id="draw"><span class="type-signature"></span>draw(time)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Do not call this if OpenLIME is animating, use redraw()</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>time</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">time</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>as in performance.now()</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="OpenLIME.js.html">OpenLIME.js</a>,
-				 <a href="OpenLIME.js.html#sunlight-1-line-125">line 125</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="redraw"><span class="type-signature"></span>redraw()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Schedule a drawing.</p>
-    </div>
     
 
     
@@ -522,8 +167,8 @@ how do I write more substantial documentation.</p></div>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="OpenLIME.js.html">OpenLIME.js</a>,
-				 <a href="OpenLIME.js.html#sunlight-1-line-116">line 116</a>
+				<a href="LayerAnnotationImage.js.html">LayerAnnotationImage.js</a>,
+				 <a href="LayerAnnotationImage.js.html#sunlight-1-line-12">line 12</a>
 			</li>
 		</ul>
 	</dd>
@@ -552,78 +197,8 @@ how do I write more substantial documentation.</p></div>
     
 </dd>
 
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="resize"><span class="type-signature"></span>resize()</h4>
     
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Resize the canvas (and the overlay) and triggers a redraw.</p>
     </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="OpenLIME.js.html">OpenLIME.js</a>,
-				 <a href="OpenLIME.js.html#sunlight-1-line-100">line 100</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
 
     
 
@@ -637,10 +212,6 @@ how do I write more substantial documentation.</p></div>
 
     
 
-    
-</dd>
-
-        </dl>
     
 
     

@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>OpenLIME Class: OpenLIME</title>
+	<title>OpenLIME Source: Tile.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -90,565 +90,64 @@
 <div class="row">
 
 	
-	<div class="col-md-8">
+	<div class="col-md-12">
 	
 		<div id="main">
 			
 
-	<h1 class="page-title">Class: OpenLIME</h1>
+		<h1 class="page-title">Source: Tile.js</h1>
+    
 <section>
-
-<header>
-    
-        <h2>
-            <span class="ancestors"><a href="module-OpenLIME.html">OpenLIME</a>~</span>
-        
-        OpenLIME
-        </h2>
-        
-            <div class="class-description"><p>Manages an OpenLIME viewer functionality on a canvas
-how do I write more substantial documentation.</p></div>
-        
-    
-</header>
-
-
-<article>
-    <div class="container-overview">
-    
-        
-<hr>
-<dt>
-    <h4 class="name" id="OpenLIME"><span class="type-signature"></span>new OpenLIME(div, options, options)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>div</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">div</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>of the DOM or selector (es. '#canvasid'), or a canvas.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>options</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>is a url to a JSON describing the viewer content</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>options</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>is a JSON describing the viewer content</p>
-<ul>
-<li><strong>animate</strong>: default <em>true</em>, calls requestAnimation() and manages refresh.</li>
-<li><strong>background</strong>: css style for background (overwrites css if present)</li>
-</ul></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="OpenLIME.js.html">OpenLIME.js</a>,
-				 <a href="OpenLIME.js.html#sunlight-1-line-35">line 35</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <h5>Example</h5>
-        
-    <pre class="sunlight-highlight-javascript">const lime = new OpenLIME.OpenLIME(&#x27;.openlime&#x27;);
-// .openlime is the class of a DIV element in the DOM.</pre>
-
-
-    
-</dd>
-
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        <dl>
-            
-<hr>
-<dt>
-    <h4 class="name" id="draw"><span class="type-signature"></span>draw(time)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Do not call this if OpenLIME is animating, use redraw()</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>time</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">time</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>as in performance.now()</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="OpenLIME.js.html">OpenLIME.js</a>,
-				 <a href="OpenLIME.js.html#sunlight-1-line-125">line 125</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="redraw"><span class="type-signature"></span>redraw()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Schedule a drawing.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="OpenLIME.js.html">OpenLIME.js</a>,
-				 <a href="OpenLIME.js.html#sunlight-1-line-116">line 116</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="resize"><span class="type-signature"></span>resize()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Resize the canvas (and the overlay) and triggers a redraw.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="OpenLIME.js.html">OpenLIME.js</a>,
-				 <a href="OpenLIME.js.html#sunlight-1-line-100">line 100</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-        </dl>
-    
-
-    
-
-    
-</article>
-
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">// Tile level x y  index ----- tex missing() start/end (tarzoom) ----- time, priority size(byte)
+
+/**
+ * A tile represents a single element of a regular grid that subdivides an image.
+ * A tile is identified by its position (`x`, `y`) within the grid and the zoom `level` of the image.
+ * @typedef {Object} Tile
+ * @property {number} level The zoom level of the tile.
+ * @property {number} x x position of the tile in the grid.
+ * @property {number} y y position of the tile in the grid.
+ * @property {number} index Unique tile identifier.
+ * @property {number} start The position of the first byte of the tile in the image dataset (used only for tarzoom and itarzoom image formats).
+ * @property {number} end The position of the last byte of the tile in the image dataset (used only for tarzoom and itarzoom image formats).
+ * @property {number} missing In the case of multi-channel formats (RTI, BRDF), the information content of a tile is distributed over several planes (channels). 
+ * `missing` represents the number of pending channel data requests.
+ * @property {Array} tex A array of WebGLTexture (one texture per channel).
+ * @property {time} time Tile creation time (this value is used internally by the cache algorithms).
+ * @property {number} priority The priority of the tile (this value is used internally by the cache algorithms).
+ * @property {number} size The total size of the tile in bytes (this value is used internally by the cache algorithms).
+ */
+
+class Tile {
+    constructor() {
+        Object.assign(this, {
+            index: null, 
+            bbox: null,
+
+            level: null, //used only in LayoutTiles
+            x: null,
+            y: null,
+            w: null, // used only in LayoutImages
+            h: null, // used only in LayoutImages
+
+            start:null,
+            end:null,
+
+            tex: [],
+            missing: null,
+            time: null,
+            priority: null,
+            size: null
+        });
+    }
+};
+
+export { Tile }</pre>
+    </article>
 </section>
+
 
 
 
@@ -658,10 +157,6 @@ how do I write more substantial documentation.</p></div>
 
 	<div class="clearfix"></div>
 
-	
-		<div class="col-md-3">
-			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
-		</div>
 	
 
 </div>

@@ -42,7 +42,7 @@
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="Annotation.html">Annotation</a></li><li><a href="BoundingBox.html">BoundingBox</a></li><li><a href="Cache.html">Cache</a></li><li><a href="Camera.html">Camera</a></li><li><a href="Canvas.html">Canvas</a></li><li><a href="Controller.html">Controller</a></li><li><a href="Controller2D.html">Controller2D</a></li><li><a href="ControllerPanZoom.html">ControllerPanZoom</a></li><li><a href="EditorSvgAnnotation.html">EditorSvgAnnotation</a></li><li><a href="FocusContext.html">FocusContext</a></li><li><a href="Layer.html">Layer</a></li><li><a href="LayerAnnotation.html">LayerAnnotation</a></li><li><a href="LayerBRDF.html">LayerBRDF</a></li><li><a href="LayerCombiner.html">LayerCombiner</a></li><li><a href="LayerImage.html">LayerImage</a></li><li><a href="LayerLens.html">LayerLens</a></li><li><a href="LayerRTI.html">LayerRTI</a></li><li><a href="LayerSvgAnnotation.html">LayerSvgAnnotation</a></li><li><a href="Layout.html">Layout</a></li><li><a href="module-OpenLIME-OpenLIME.html">OpenLIME~OpenLIME</a></li><li><a href="PointerManager.html">PointerManager</a></li><li><a href="Raster.html">Raster</a></li><li><a href="Shader.html">Shader</a></li><li><a href="ShaderBRDF.html">ShaderBRDF</a></li><li><a href="ShaderCombiner.html">ShaderCombiner</a></li><li><a href="ShaderRTI.html">ShaderRTI</a></li><li><a href="Skin.html">Skin</a></li><li><a href="Transform.html">Transform</a></li><li><a href="UIBasic.html">UIBasic</a></li><li><a href="UIDialog.html">UIDialog</a></li><li><a href="Viewer.html">Viewer</a></li>
+					<li><a href="Annotation.html">Annotation</a></li><li><a href="BoundingBox.html">BoundingBox</a></li><li><a href="Cache.html">Cache</a></li><li><a href="Camera.html">Camera</a></li><li><a href="Canvas.html">Canvas</a></li><li><a href="Controller.html">Controller</a></li><li><a href="Controller2D.html">Controller2D</a></li><li><a href="ControllerPanZoom.html">ControllerPanZoom</a></li><li><a href="EditorSvgAnnotation.html">EditorSvgAnnotation</a></li><li><a href="FocusContext.html">FocusContext</a></li><li><a href="Layer.html">Layer</a></li><li><a href="LayerAnnotation.html">LayerAnnotation</a></li><li><a href="LayerAnnotationImage.html">LayerAnnotationImage</a></li><li><a href="LayerBRDF.html">LayerBRDF</a></li><li><a href="LayerCombiner.html">LayerCombiner</a></li><li><a href="LayerImage.html">LayerImage</a></li><li><a href="LayerLens.html">LayerLens</a></li><li><a href="LayerRTI.html">LayerRTI</a></li><li><a href="LayerSvgAnnotation.html">LayerSvgAnnotation</a></li><li><a href="Layout.html">Layout</a></li><li><a href="LayoutTiles.html">LayoutTiles</a></li><li><a href="module-OpenLIME-OpenLIME.html">OpenLIME~OpenLIME</a></li><li><a href="PointerManager.html">PointerManager</a></li><li><a href="Raster.html">Raster</a></li><li><a href="Shader.html">Shader</a></li><li><a href="ShaderBRDF.html">ShaderBRDF</a></li><li><a href="ShaderCombiner.html">ShaderCombiner</a></li><li><a href="ShaderRTI.html">ShaderRTI</a></li><li><a href="Skin.html">Skin</a></li><li><a href="Transform.html">Transform</a></li><li><a href="UIBasic.html">UIBasic</a></li><li><a href="UIDialog.html">UIDialog</a></li><li><a href="Viewer.html">Viewer</a></li>
 				</ul>
 			</li>
 			
@@ -63,7 +63,7 @@
 			<li class="dropdown">
 				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="global.html#crudCallback">crudCallback</a></li><li><a href="global.html#customStateCallback">customStateCallback</a></li><li><a href="global.html#simplify">simplify</a></li><li><a href="global.html#smooth">smooth</a></li><li><a href="global.html#smoothToPath">smoothToPath</a></li>
+					<li><a href="global.html#crudCallback">crudCallback</a></li><li><a href="global.html#customDataCallback">customDataCallback</a></li><li><a href="global.html#customStateCallback">customStateCallback</a></li><li><a href="global.html#selectedCallback">selectedCallback</a></li><li><a href="global.html#simplify">simplify</a></li><li><a href="global.html#smooth">smooth</a></li><li><a href="global.html#smoothToPath">smoothToPath</a></li>
 				</ul>
 			</li>
 			
@@ -111,26 +111,24 @@ class LayerLens extends LayerCombiner {
 	constructor(options) {
 		options = Object.assign({
 			overlay: true,
-			defaultBorderColor: [0.8, 0.8, 0.8, 1],
+			radius: 100,
+			borderColor: [0.8, 0.8, 0.8, 1],
+			borderWidth: 4,
 		}, options);
 		super(options);
 		
 		// Shader lens currently handles up to 2 layers
 		let shader = new ShaderLens();
-		if (this.layers.length == 2) shader.setOverlayLayerEnabled(true);
+		if (this.layers.length == 2) shader.setOverlayLayerEnabled(true); //FIXME Is it a mode? Control?
 		this.shaders['lens'] = shader;
 		this.setShader('lens');
 
-		this.startPos = [0, 0];
-		this.border = 4;
-
 		this.addControl('center', [0, 0]);
-		this.addControl('radius', [0, 0]);
+		this.addControl('radius', [this.radius, 0]);
+		this.addControl('borderColor', this.borderColor);
+		this.addControl('borderWidth', [this.borderWidth]);
 
-		this.setLens(0,0,this.radius,this.border);
 		this.signals.draw = [];
-		const c = this.defaultBorderColor;
-		this.borderColor = [c[0], c[1], c[2], c[3]];
 	}
 
 	removeOverlayLayer() {
@@ -155,23 +153,17 @@ class LayerLens extends LayerCombiner {
 		this.layout.height = h;
 		this.createFramebuffers();
 	}
-
-	setLens(x = 0, y = 0, r = 100, border = 10) {
-		this.border = border;
-		this.setCenter(x, y);
-		this.setRadius(r);
-	}
 	
-	setRadius(r, delayms = 100) {
-		this.setControl('radius', [r, 0], delayms);
+	setRadius(r, delayms = 100, easing='linear') {
+		this.setControl('radius', [r, 0], delayms, easing);
 	}
 
 	getRadius() {
 		return this.controls['radius'].current.value[0];
 	}
 
-	setCenter(x, y, delayms = 100) {
-		this.setControl('center', [x, y], delayms);
+	setCenter(x, y, delayms = 100, easing='linear') {
+		this.setControl('center', [x, y], delayms, easing);
 	}
 
 	getCurrentCenter() {
@@ -182,14 +174,87 @@ class LayerLens extends LayerCombiner {
 		return this.controls['center'].target.value;
 	}
 
+	getBorderColor() {
+		return this.controls['borderColor'].current.value;
+	}
+
+	getBorderWidth() {
+		return this.controls['borderWidth'].current.value[0];
+	}
+
 	draw(transform, viewport) {
 		let done = this.interpolateControls();
-		const vlens = this.getLensInViewportCoords(transform, viewport);
-		this.shader.setLensUniforms(vlens, [viewport.w, viewport.h], this.borderColor);
+		// const vlens = this.getLensInViewportCoords(transform, viewport);
+		// this.shader.setLensUniforms(vlens, [viewport.w, viewport.h], this.borderColor);
+		// this.emit('draw');
+		// super.draw(transform, viewport);
+
+		for(let layer of this.layers)
+			if(layer.status != 'ready')
+				return false;
+
+		if(!this.shader)
+			throw "Shader not specified!";
+
 		this.emit('draw');
+		let gl = this.gl;
 
-		super.draw(transform, viewport);
+		// Draw on a restricted viewport around the lens, to lower down the number of required tiles
+		let lensViewport = this.getLensViewport(transform, viewport);
 
+		// If an overlay is present, merge its viewport with the lens one
+		let overlayViewport = this.getOverlayLayerViewport(transform, viewport);
+		if (overlayViewport != null) {
+			lensViewport = this.joinViewports(lensViewport, overlayViewport);
+		}
+
+		gl.viewport(lensViewport.x, lensViewport.y, lensViewport.dx, lensViewport.dy);
+
+		// Keep the framwbuffer to the window size in order to avoid changing at each scale event
+		if(!this.framebuffers.length || this.layout.width != viewport.w || this.layout.height != viewport.h) {
+			this.deleteFramebuffers();
+			this.layout.width = viewport.w;
+			this.layout.height = viewport.h;
+			this.createFramebuffers();
+		}
+		var b = [0, 0, 0, 0];
+		gl.clearColor(b[0], b[1], b[2], b[3]);
+
+		// Draw the layers only within the viewport enclosing the lens
+		for(let i = 0; i &lt; this.layers.length; i++) { 
+			gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffers[i]);
+			gl.clear(gl.COLOR_BUFFER_BIT);
+			this.layers[i].draw(transform, lensViewport);
+			gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+		}
+		
+		// Set in the lensShader the proper lens position wrt the window viewport
+		const vl = this.getLensInViewportCoords(transform, viewport);
+		this.shader.setLensUniforms(vl, [viewport.w, viewport.h], this.getBorderColor());
+	
+		this.prepareWebGL();
+
+		// Bind all textures and combine them with the shaderLens
+		for(let i = 0; i &lt; this.layers.length; i++) {
+			gl.uniform1i(this.shader.samplers[i].location, i);
+			gl.activeTexture(gl.TEXTURE0 + i);
+			gl.bindTexture(gl.TEXTURE_2D, this.textures[i]);
+		}
+
+		// Get texture coords of the lensViewport with respect to the framebuffer sz
+		const lx = lensViewport.x/lensViewport.w;
+		const ly = lensViewport.y/lensViewport.h;
+		const hx = (lensViewport.x+lensViewport.dx)/lensViewport.w;
+		const hy = (lensViewport.y+lensViewport.dy)/lensViewport.h;
+		
+		this.updateTileBuffers(
+			new Float32Array([-1, -1, 0,  -1, 1, 0,  1, 1, 0,  1, -1, 0]), 
+			new Float32Array([ lx, ly,     lx, hy,   hx, hy,   hx, ly]));
+		gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT,0);
+
+		// Restore old viewport
+		gl.viewport(viewport.x, viewport.x, viewport.dx, viewport.dy);
+		
 		return done;
 	}
 
@@ -197,14 +262,46 @@ class LayerLens extends LayerCombiner {
 		const lensC = this.getCurrentCenter();
 		const l = transform.sceneToViewportCoords(viewport, lensC);
 		const r = this.getRadius() * transform.z;
-		return {x: Math.floor(l[0]-r), y: Math.floor(l[1]-r), dx: Math.ceil(2*r), dy: Math.ceil(2*r), w:viewport.w, h:viewport.h};
+		return {x: Math.floor(l[0]-r)-1, y: Math.floor(l[1]-r)-1, dx: Math.ceil(2*r)+2, dy: Math.ceil(2*r)+2, w:viewport.w, h:viewport.h};
+	}
+
+	getOverlayLayerViewport(transform, viewport) {
+		let result = null;
+		if (this.layers.length == 2) {
+			// Get overlay projected viewport
+			let bbox = this.layers[1].boundingBox();
+			const p0v = transform.sceneToViewportCoords(viewport, [bbox.xLow, bbox.yLow]);
+			const p1v = transform.sceneToViewportCoords(viewport, [bbox.xHigh, bbox.yHigh]);
+		
+			// Intersect with window viewport
+			const x0 = Math.min(Math.max(0, Math.floor(p0v[0])), viewport.w);
+			const y0 = Math.min(Math.max(0, Math.floor(p0v[1])), viewport.h);
+			const x1 = Math.min(Math.max(0, Math.ceil(p1v[0])), viewport.w);
+			const y1 = Math.min(Math.max(0, Math.ceil(p1v[1])), viewport.h);
+
+			const width = x1 - x0;
+			const height = y1 - y0;
+			result = {x: x0, y: y0, dx:width, dy: height, w:viewport.w, h:viewport.h};
+		} 
+		return result;
+	}
+
+	joinViewports(v0, v1) {
+		const xm = Math.min(v0.x, v1.x);
+		const xM = Math.max(v0.x+v0.dx, v1.x+v1.dx);
+		const ym = Math.min(v0.y, v1.y);
+		const yM = Math.max(v0.y+v0.dy, v1.y+v1.dy);
+		const width = xM - xm;
+		const height = yM - ym;
+		
+		return {x:xm, y:ym, dx:width, dy:height, w: v0.w, h: v0.h };
 	}
 
 	getLensInViewportCoords(transform, viewport) {
 		const lensC = this.getCurrentCenter();
 		const c = transform.sceneToViewportCoords(viewport, lensC);
 		const r = this.getRadius();
-		return [c[0],  c[1], r * transform.z, this.border];
+		return [c[0],  c[1], r * transform.z, this.getBorderWidth()];
 	}
 
 }
@@ -259,7 +356,7 @@ export {LayerLens}
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a>
 	
-		on Fri Apr 22nd 2022
+		on Tue May 31st 2022
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

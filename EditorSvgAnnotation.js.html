@@ -42,7 +42,7 @@
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="Annotation.html">Annotation</a></li><li><a href="BoundingBox.html">BoundingBox</a></li><li><a href="Cache.html">Cache</a></li><li><a href="Camera.html">Camera</a></li><li><a href="Canvas.html">Canvas</a></li><li><a href="Controller.html">Controller</a></li><li><a href="Controller2D.html">Controller2D</a></li><li><a href="ControllerPanZoom.html">ControllerPanZoom</a></li><li><a href="EditorSvgAnnotation.html">EditorSvgAnnotation</a></li><li><a href="FocusContext.html">FocusContext</a></li><li><a href="Layer.html">Layer</a></li><li><a href="LayerAnnotation.html">LayerAnnotation</a></li><li><a href="LayerBRDF.html">LayerBRDF</a></li><li><a href="LayerCombiner.html">LayerCombiner</a></li><li><a href="LayerImage.html">LayerImage</a></li><li><a href="LayerLens.html">LayerLens</a></li><li><a href="LayerRTI.html">LayerRTI</a></li><li><a href="LayerSvgAnnotation.html">LayerSvgAnnotation</a></li><li><a href="Layout.html">Layout</a></li><li><a href="module-OpenLIME-OpenLIME.html">OpenLIME~OpenLIME</a></li><li><a href="PointerManager.html">PointerManager</a></li><li><a href="Raster.html">Raster</a></li><li><a href="Shader.html">Shader</a></li><li><a href="ShaderBRDF.html">ShaderBRDF</a></li><li><a href="ShaderCombiner.html">ShaderCombiner</a></li><li><a href="ShaderRTI.html">ShaderRTI</a></li><li><a href="Skin.html">Skin</a></li><li><a href="Transform.html">Transform</a></li><li><a href="UIBasic.html">UIBasic</a></li><li><a href="UIDialog.html">UIDialog</a></li><li><a href="Viewer.html">Viewer</a></li>
+					<li><a href="Annotation.html">Annotation</a></li><li><a href="BoundingBox.html">BoundingBox</a></li><li><a href="Cache.html">Cache</a></li><li><a href="Camera.html">Camera</a></li><li><a href="Canvas.html">Canvas</a></li><li><a href="Controller.html">Controller</a></li><li><a href="Controller2D.html">Controller2D</a></li><li><a href="ControllerPanZoom.html">ControllerPanZoom</a></li><li><a href="EditorSvgAnnotation.html">EditorSvgAnnotation</a></li><li><a href="FocusContext.html">FocusContext</a></li><li><a href="Layer.html">Layer</a></li><li><a href="LayerAnnotation.html">LayerAnnotation</a></li><li><a href="LayerAnnotationImage.html">LayerAnnotationImage</a></li><li><a href="LayerBRDF.html">LayerBRDF</a></li><li><a href="LayerCombiner.html">LayerCombiner</a></li><li><a href="LayerImage.html">LayerImage</a></li><li><a href="LayerLens.html">LayerLens</a></li><li><a href="LayerRTI.html">LayerRTI</a></li><li><a href="LayerSvgAnnotation.html">LayerSvgAnnotation</a></li><li><a href="Layout.html">Layout</a></li><li><a href="LayoutTiles.html">LayoutTiles</a></li><li><a href="module-OpenLIME-OpenLIME.html">OpenLIME~OpenLIME</a></li><li><a href="PointerManager.html">PointerManager</a></li><li><a href="Raster.html">Raster</a></li><li><a href="Shader.html">Shader</a></li><li><a href="ShaderBRDF.html">ShaderBRDF</a></li><li><a href="ShaderCombiner.html">ShaderCombiner</a></li><li><a href="ShaderRTI.html">ShaderRTI</a></li><li><a href="Skin.html">Skin</a></li><li><a href="Transform.html">Transform</a></li><li><a href="UIBasic.html">UIBasic</a></li><li><a href="UIDialog.html">UIDialog</a></li><li><a href="Viewer.html">Viewer</a></li>
 				</ul>
 			</li>
 			
@@ -63,7 +63,7 @@
 			<li class="dropdown">
 				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="global.html#crudCallback">crudCallback</a></li><li><a href="global.html#customStateCallback">customStateCallback</a></li><li><a href="global.html#simplify">simplify</a></li><li><a href="global.html#smooth">smooth</a></li><li><a href="global.html#smoothToPath">smoothToPath</a></li>
+					<li><a href="global.html#crudCallback">crudCallback</a></li><li><a href="global.html#customDataCallback">customDataCallback</a></li><li><a href="global.html#customStateCallback">customStateCallback</a></li><li><a href="global.html#selectedCallback">selectedCallback</a></li><li><a href="global.html#simplify">simplify</a></li><li><a href="global.html#smooth">smooth</a></li><li><a href="global.html#smoothToPath">smoothToPath</a></li>
 				</ul>
 			</li>
 			
@@ -117,6 +117,18 @@ import { createSVGElement, LayerSvgAnnotation } from './LayerSvgAnnotation.js'
  */
 
 /**
+ * Callback to customize the annotation data object.
+ * @function customDataCallback
+ * @param {Annotation} anno The current annotation entry.
+ */
+
+/**
+ * Callback executed when an annotation is selcted on the user interface.
+ * @function selectedCallback
+ * @param {Annotation} anno The current annotation entry.
+ */
+
+/**
  * **EditorSvgAnnotation** enables the {@link UIBasic} interface to edit (create/update/delete) SVG annotations.
  * This class is a mere utility that acts as an adapter between the annotation database and the OpenLIME system.
  * 
@@ -153,6 +165,8 @@ class EditorSvgAnnotation {
 	 * @param {crudCallback} options.deleteCallback The callback to implement annotation deletion.
 	 * @param {bool} options.enableState=false Whether to enable custom annotation state. This allows to include some state variables into an annotation item (such as camera, light or lens position).
 	 * @param {customStateCallback} options.customState The callback implementing custom state annotations.
+	 * @param {customDataCallback} options.customData The callback to customize the annotation data object.
+	 * @param {selectedCallback} options.selectedCallback The callback executed when an annotation is selcted on the user interface.
 	 */
 	constructor(viewer, layer, options) {
 		this.layer = layer;
@@ -181,9 +195,9 @@ class EditorSvgAnnotation {
 				},
 				pin: {
 					template: (x,y) => {
-						const count = this.layer.annotations.length-1;
+						console.log("idx= ", this.annotation.idx);
 						return `&lt;svg xmlns='http://www.w3.org/2000/svg' x='${x}' y='${y}' width='4%' height='4%' 
-						viewBox='0 0 18 18'>&lt;path d='M 0,0 C 0,0 4,0 8,0 12,0 16,4 16,8 16,12 12,16 8,16 4,16 0,12 0,8 0,4 0,0 0,0 Z'/>&lt;text id='pin-text' x='7' y='8'>${count}&lt;/text>&lt;/svg>`;
+						viewBox='0 0 18 18'>&lt;path d='M 0,0 C 0,0 4,0 8,0 12,0 16,4 16,8 16,12 12,16 8,16 4,16 0,12 0,8 0,4 0,0 0,0 Z'/>&lt;text id='pin-text' x='7' y='8'>${this.annotation.idx}&lt;/text>&lt;/svg>`;
 					}, //pin di alcazar  1. url a svg 2. txt (stringa con svg) 3. funzione(x,y) ritorna svg 4. dom (da skin).
 					tooltip: 'New pin',
 					tool: Pin
@@ -224,7 +238,9 @@ class EditorSvgAnnotation {
 			annotation: null, //not null only when editWidget is shown.
 			enableState: false,
 			customState: null,
+			customData: null,
 			editWidget: null,
+			selectedCallback: null,
 			createCallback: null, //callbacks for backend
 			updateCallback: null,
 			deleteCallback: null
@@ -237,6 +253,7 @@ class EditorSvgAnnotation {
 		layer.addEvent('selected', (anno) => {
 			if (!anno || anno == this.annotation)
 				return;
+			if(this.selectedCallback) this.selectedCallback(anno);
 			this.showEditWidget(anno);
 		});
 
@@ -275,22 +292,21 @@ class EditorSvgAnnotation {
 	/** @ignore */
 	createAnnotation() {
 		let anno = this.layer.newAnnotation();
-		if(this.enableState) setAnnotationCurrentState();
+		if(this.customData) this.customData(anno);
+		if(this.enableState) this.setAnnotationCurrentState(anno);
+		anno.idx = this.layer.annotations.length;
 		anno.publish = 1;
 		anno.label = anno.description = anno.class = '';
 		let post = {
-			id: anno.id, label: anno.label, description: anno.description, 'class': anno.class, svg: null,
-			publish: anno.publish
+			id: anno.id, idx: anno.idx, label: anno.label, description: anno.description, 'class': anno.class, svg: null,
+			publish: anno.publish, data: anno.data
 		};
 		if (this.enableState) post = { ...post, state: anno.state };
-		// if (anno.light) post = { ...post, light: anno.light }; FIXME
-		// if (anno.lens) post = { ...post, lens: anno.lens };
 		if (this.createCallback) {
 			let result = this.createCallback(post);
 			if (!result)
 				alert("Failed to create annotation!");
 		}
-		this.showEditWidget(anno);
 		this.layer.setSelected(anno);
 	}
 
@@ -315,6 +331,11 @@ class EditorSvgAnnotation {
 			anno.class = '';
 		edit.querySelector('[name=label]').value = anno.label || '';
 		edit.querySelector('[name=description]').value = anno.description || '';
+		edit.querySelector('[name=idx]').value = anno.idx || '';
+		Object.entries(anno.data).map(k => {
+			edit.querySelector(`[name=data-data-${k[0]}]`).value = k[1] || '';
+		});
+
 		edit.querySelector('[name=classes]').value = anno.class;
 		edit.querySelector('[name=publish]').checked = anno.publish == 1;
 		edit.classList.remove('hidden');
@@ -347,14 +368,19 @@ class EditorSvgAnnotation {
 	/** @ignore */
 	async createEditWidget() {
 		if (this.editWidget)
-			return;
-
+			return;		
 		let html = `
 				&lt;div class="openlime-annotation-edit">
-					&lt;span>Title:&lt;/span> &lt;input name="label" type="text">
-					&lt;span>Description:&lt;/span> &lt;input name="description" type="text">
-					
-
+					&lt;label for="label">Title:&lt;/label> &lt;input name="label" type="text">&lt;br>
+					&lt;label for="description">Description:&lt;/label>&lt;br>
+					&lt;textarea name="description" cols="30" rows="5">&lt;/textarea>&lt;br>
+					&lt;label for="idx">Index:&lt;/label> &lt;input name="idx" type="text">&lt;br>	
+					${Object.entries(this.annotation.data).map(k => {
+						let label = k[0];
+						let str = `&lt;label for="data-data-${k[0]}">${label}:&lt;/label> &lt;input name="data-data-${k[0]}" type="text">&lt;br>`
+						return str;
+					}).join('\n')}
+					&lt;br>
 					&lt;span>Class:&lt;/span> 
 					&lt;div class="openlime-select">
 						&lt;input type="hidden" name="classes" value=""/>
@@ -364,8 +390,8 @@ class EditorSvgAnnotation {
 			`&lt;li data-class="${c[0]}" style="background:${c[1].stroke};">${c[1].label}&lt;/li>`).join('\n')}
 						&lt;/ul>
 					&lt;/div>
-					&lt;span>&lt;button class="openlime-state">Set State&lt;/button>&lt;/span>
-					&lt;span>&lt;input type="checkbox" name="publish" value=""> Publish&lt;/span>
+					&lt;span>&lt;button class="openlime-state">SAVE&lt;/button>&lt;/span>
+					&lt;span>&lt;input type="checkbox" name="publish" value=""> Publish&lt;/span>&lt;br>
 					&lt;div class="openlime-annotation-edit-tools">&lt;/div>
 				&lt;/div>`;
 		let template = document.createElement('template');
@@ -381,7 +407,7 @@ class EditorSvgAnnotation {
 		let state = edit.querySelector('.openlime-state');
 		
 		state.addEventListener('click', (e) => {
-			if(this.enableState) this.setAnnotationCurrentState();
+			if(this.enableState) this.setAnnotationCurrentState(this.annotation);
 			this.saveCurrent();
 			this.saveAnnotation(); 
 		});
@@ -441,6 +467,26 @@ class EditorSvgAnnotation {
 		let descr = edit.querySelector('[name=description]');
 		descr.addEventListener('blur', (e) => { if (this.annotation.description != descr.value) this.saveCurrent(); this.saveAnnotation(); });
 
+		let idx = edit.querySelector('[name=idx]');
+		idx.addEventListener('blur', (e) => { 
+			if (this.annotation.idx != idx.value) {
+				const svgPinIdx = this.annotation.elements[0];
+				if(svgPinIdx) {
+					const txt = svgPinIdx.querySelector("#pin-text");
+					if(txt) {
+						txt.textContent = idx.value;
+					}
+				}
+				this.saveCurrent();
+			} 
+			this.saveAnnotation(); 
+		});
+
+		Object.entries(this.annotation.data).map(k => {
+			let dataElm = edit.querySelector(`[name=data-data-${k[0]}]`);
+			dataElm.addEventListener('blur', (e) => { if (this.annotation.data[k[0]] != dataElm.value) this.saveCurrent(); this.saveAnnotation(); });
+		});
+
 		let classes = edit.querySelector('[name=classes]');
 		classes.addEventListener('change', (e) => { if (this.annotation.class != classes.value) this.saveCurrent(); this.saveAnnotation(); });
 
@@ -452,13 +498,10 @@ class EditorSvgAnnotation {
 	}
 
 	/** @ignore */
-	setAnnotationCurrentState() {
-		const cam = this.viewer.camera;
-		let now = performance.now();
-		let m = cam.getCurrentTransform(now);
-		this.annotation.state = { camera: { 'x': m.x, 'y': m.y, 'z': m.z } };
+	setAnnotationCurrentState(anno) {
+		anno.state = window.structuredClone(this.viewer.canvas.getState());
 		// Callback to add  light/lens params or other data
-		if(this.customState) this.customState(this.annotation);
+		if(this.customState) this.customState(anno);
 	}
 
 	/** @ignore */
@@ -468,6 +511,10 @@ class EditorSvgAnnotation {
 
 		anno.label = edit.querySelector('[name=label]').value || '';
 		anno.description = edit.querySelector('[name=description]').value || '';
+		anno.idx = edit.querySelector('[name=idx]').value || '0';
+		Object.entries(anno.data).map(k => {
+			anno.data[k[0]] = edit.querySelector(`[name=data-data-${k[0]}]`).value || '';
+		});		
 		anno.publish = edit.querySelector('[name=publish]').checked ? 1 : 0;
 		let select = edit.querySelector('[name=classes]');
 		anno.class = select.value || '';
@@ -479,8 +526,8 @@ class EditorSvgAnnotation {
 			e.setAttribute('data-class', anno.class);
 
 		let post = {
-			id: anno.id, label: anno.label, description: anno.description, class: anno.class,
-			publish: anno.publish
+			id: anno.id, idx: anno.idx, label: anno.label, description: anno.description, class: anno.class,
+			publish: anno.publish, data: anno.data
 		};
 		if (this.enableState) post = { ...post, state: anno.state };
 		// if (anno.light) post = { ...post, light: anno.light }; FIXME
@@ -661,7 +708,6 @@ class EditorSvgAnnotation {
 
 	/** @ignore */
 	saveCurrent() {
-		console.log('save current');
 		let anno = this.annotation; //current annotation.
 		if (!anno.history)
 			anno.history = [];
@@ -673,7 +719,7 @@ class EditorSvgAnnotation {
 	/** @ignore */
 	annoToData(anno) {
 		let data = {};
-		for (let i of ['id', 'label', 'description', 'class', 'publish'])
+		for (let i of ['id', 'label', 'description', 'class', 'publish', 'data'])
 			data[i] = `${anno[i] || ''}`;
 		data.elements = anno.elements.map(e => { let n = e.cloneNode(); n.points = e.points; return n; });
 		return data;
@@ -681,7 +727,7 @@ class EditorSvgAnnotation {
 
 	/** @ignore */
 	dataToAnno(data, anno) {
-		for (let i of ['id', 'label', 'description', 'class', 'publish'])
+		for (let i of ['id', 'label', 'description', 'class', 'publish', 'data'])
 			anno[i] = `${data[i]}`;
 		anno.elements = data.elements.map(e => { let n = e.cloneNode(); n.points = e.points; return n; });
 	}
@@ -1143,7 +1189,7 @@ export { EditorSvgAnnotation }</pre>
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a>
 	
-		on Fri Apr 22nd 2022
+		on Tue May 31st 2022
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>
