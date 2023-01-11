@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>OpenLIME Source: LayerSvgAnnotation.js</title>
+	<title>OpenLIME Source: ControllerLens.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -88,250 +88,232 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: LayerSvgAnnotation.js</h1>
+		<h1 class="page-title">Source: ControllerLens.js</h1>
     
 <section>
     <article>
         <pre
-            class="sunlight-highlight-javascript linenums">import { Util } from './Util'
-import { Layer } from './Layer'
-import { Annotation } from './Annotation'
-import { LayerAnnotation } from './LayerAnnotation'
-import { CoordinateSystem } from './CoordinateSystem';
+            class="sunlight-highlight-javascript linenums">import {Controller} from './Controller.js'
+import {CoordinateSystem} from './CoordinateSystem.js'
+import { FocusContext } from './FocusContext.js';
 
-/**
- * Elements to classify the annotations.
- * @typedef {Object} AnnotationClass
- * @property {color} stroke The CSS color of a line, text or outline SVG element.
- * @property {string} label The class name.
- */
-/**
- * Annotation classes.
- * @typedef {Object.&lt;string, AnnotationClass>} AnnotationClasses
- */
-
-
-/**
- * An annotation layer that draws SVG elements directly on the canvas (outside the WebGL context).
- * 
- * Here you will find a tutorial to learn how to build a client-server architecture to manage annotations in OpenLIME. //FIXME
- * 
- * Extends {@link LayerAnnotation}.
- */
-class LayerSvgAnnotation extends LayerAnnotation {
-	/**
-	 * Instantiates a LayerSvgAnnotation object.
-	 * @param {Object} [options] An object literal with options that inherits from {@link LayerAnnotation}.
- 	 * @param {AnnotationClasses} options.classes An object literal definying colors and labels of the annotation classes.
- 	 * @param {Function} options.onClick The callback to fire when the an annotation is clicked on the canvas. The callback is passed an object containing the selected annotation.
-	 * @param {bool} options.shadow=true Whether to insert SVG elements in a shadow DOM.
-	 */
+class ControllerLens extends Controller {
 	constructor(options) {
-		options = Object.assign({
-			overlayElement: null,   //reference to canvas overlayElement. TODO: check if really needed.
-			shadow: true,           //svg attached as shadow node (so style apply only the svg layer)
-			svgElement: null, 		//the svg layer
-			svgGroup: null,
-			onClick: null,			//callback function
-			classes: {
-				'': { style: { stroke: '#000' }, label: '' },
-			},
-			annotationUpdate: null
-		}, options);
+
 		super(options);
-		for(const [key, value] of Object.entries(this.classes)) {
-			this.style += `[data-class=${key}] { ` + Object.entries(value.style).map( g => `${g[0]}: ${g[1]};`).join('\n') + '}';
-		}
-		//this.createOverlaySVGElement();
-		//this.setLayout(this.layout);
+
+        if (!options.lensLayer) {
+            console.log("ControllerLens lensLayer option required");
+            throw "ControllerLens lensLayer option required";
+        }
+ 
+        if (!options.camera) {
+            console.log("ControllerLens camera option required");
+            throw "ControllerLens camera option required";
+        }
+
+        this.panning = false;
+        this.zooming = false;
+        this.initialDistance = 0;
+        this.startPos = {x:0, y:0};
+        this.oldCursorPos = {x:0, y:0};
+        this.useGL = false;
+    }
+
+	panStart(e) {
+        if (!this.active)
+            return;
+
+        const p = this.getScenePosition(e);
+        this.panning = false;
+
+        const hit = this.isInsideLens(p);
+        if (this.lensLayer.visible &amp;&amp; hit.inside) {
+            // if (hit.border) {
+            //     this.zooming = true;
+            //     const p = this.getPixelPosition(e);
+            //     this.zoomStart(p);
+            // } else {
+            //     this.panning = true;
+            // }
+            this.panning = true;
+            this.startPos = p;
+
+            e.preventDefault();
+        }
 	}
 
-	/** @ignore */
-	createOverlaySVGElement() { 
-		this.svgElement = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-		this.svgElement.classList.add('openlime-svgoverlay');
-		this.svgGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-		this.svgElement.append(this.svgGroup);
-
-		let root = this.overlayElement;
-		if (this.shadow)
-			root = this.overlayElement.attachShadow({ mode: "open" });
-
-		if (this.style) {
-			const style = document.createElement('style');
-			style.textContent = this.style;
-			root.append(style);
-		}
-		root.appendChild(this.svgElement);
-	}
-	/*  unused for the moment!!! 
-		async loadSVG(url) {
-			var response = await fetch(url);
-			if (!response.ok) {
-				this.status = "Failed loading " + this.url + ": " + response.statusText;
-				return;
-			}
-			let text = await response.text();
-			let parser = new DOMParser();
-			this.svgXML = parser.parseFromString(text, "image/svg+xml").documentElement;
-			throw "if viewbox is set in svgURL should it overwrite options.viewbox or viceversa?"
-		}
-	*/
-
-	/**
-	 * Sets a value that indicates whether the layer is visible.
-	 * @param {bool} visible The value.
-	 */
-	setVisible(visible) {
-		if (this.svgElement)
-			this.svgElement.style.display = visible ? 'block' : 'none';
-		super.setVisible(visible);
+	panMove(e) {
+        // Discard events due to cursor outside window
+        const p = this.getPixelPosition(e);
+        if (Math.abs(e.offsetX) > 64000 || Math.abs(e.offsetY) > 64000) return;
+        if(this.panning) {
+            const p = this.getScenePosition(e);
+            const dx = p.x-this.startPos.x;
+            const dy = p.y-this.startPos.y;
+            const c = this.lensLayer.getTargetCenter();
+    
+            this.lensLayer.setCenter(c.x + dx, c.y + dy);
+            this.startPos = p;
+            e.preventDefault();
+        }
+        //  else if (this.zooming) {
+        //     const p = this.getPixelPosition(e);
+        //     this.zoomMove(p);
+        // }
 	}
 
-	/** @ignore */
-	clearSelected() {
-		if (!this.svgElement) this.createOverlaySVGElement();
-		//		return;
-		this.svgGroup.querySelectorAll('[data-annotation]').forEach((e) => e.classList.remove('selected'));
-		super.clearSelected();
+	panEnd(e) {
+		this.panning = false;
+        this.zooming = false;
 	}
 
-	/**
-	 * Selects/deselects an annotation
-	 * @param {Annotation} anno The annotation.
-	 * @param {bool} on=true Whether to select the annotation.
-	 */
-	setSelected(anno, on = true) {
-		for (let a of this.svgElement.querySelectorAll(`[data-annotation="${anno.id}"]`))
-			a.classList.toggle('selected', on);
+	pinchStart(e1, e2) {
+        if (!this.active)
+            return;
 
-		super.setSelected(anno, on);
+        const p0 = this.getScenePosition(e1);
+        const p1 = this.getScenePosition(e2);
+        const pc = {x:(p0.x+ p1.x) * 0.5, y: (p0.y + p1.y) * 0.5};
+
+        if (this.lensLayer.visible &amp;&amp; this.isInsideLens(pc).inside) {
+            this.zooming = true;
+            this.initialDistance = this.distance(e1, e2);
+            this.initialRadius = this.lensLayer.getRadius();
+            this.startPos = pc;
+
+            e1.preventDefault();
+        } 
 	}
 
-	/** @ignore */
-	newAnnotation(annotation) {
-		let svg = Util.createSVGElement('svg');
-		if (!annotation)
-			annotation = new Annotation({ element: svg, selector_type: 'SvgSelector' });
-		return super.newAnnotation(annotation)
+	pinchMove(e1, e2) {
+		if (!this.zooming)
+            return;
+        const d = this.distance(e1, e2);
+		const scale = d / (this.initialDistance + 0.00001);
+        const newRadius = scale * this.initialRadius;
+        this.lensLayer.setRadius(newRadius);
 	}
 
-	/** @ignore */
-	draw(transform, viewport) {
-		if (!this.svgElement)
-			return true;
-		this.svgElement.setAttribute('viewBox', `${-viewport.w / 2} ${-viewport.h / 2} ${viewport.w} ${viewport.h}`);
+	pinchEnd(e, x, y, scale) {
+		this.zooming = false;
+    }
+    
+    mouseWheel(e) {
+        const p = this.getScenePosition(e);
+        let result = false;
+        if (this.lensLayer.visible &amp;&amp; this.isInsideLens(p).inside) {
+            const delta = e.deltaY > 0 ? 1 : -1;
+            const factor = delta > 0 ? 1.2 : 1/1.2;
+            const r = this.lensLayer.getRadius();
+            this.lensLayer.setRadius(r*factor);
+            this.startPos = p;
 
-		const svgTransform = this.getSvgGroupTransform(transform);
-		this.svgGroup.setAttribute("transform",	svgTransform);
-		return true;
-	}
-
-	/**
-	 * Return the string containing the transform for drawing the svg group in the proper position
-	 * @param {Transform} transform current transform parameter of the draw function
-	 * @param {bool} inverse when its false return the transform needed to draw the svgGroup
-	 * @returns string with svgroup transform 
-	 */
-	getSvgGroupTransform(transform, inverse=false) {
-		let t = this.transform.compose(transform);
-		let c = this.boundingBox().corner(0);
-		// FIXME CHECK IT: Convert from GL to SVG, but without any scaling. It just needs to reflect around 0,
-		t = CoordinateSystem.reflectY(t);
-		return inverse ?
-		 `translate(${-c.x} ${-c.y})  scale(${1/t.z} ${1/t.z}) rotate(${t.a} 0 0) translate(${-t.x} ${-t.y})` :
-		 `translate(${t.x} ${t.y}) rotate(${-t.a} 0 0) scale(${t.z} ${t.z}) translate(${c.x} ${c.y})`;
-	}
-
-	/** @ignore */
-	prefetch(transform) {
-		if (!this.svgElement)
-			this.createOverlaySVGElement();
-
-		if (!this.visible) return;
-		if (this.status != 'ready')
-			return;
-
-		if (typeof (this.annotations) == "string") return; //FIXME Is it right? Should we use this.status?
-
-		const bBox = this.boundingBox();
-		this.svgElement.setAttribute('viewBox', `${bBox.xLow} ${bBox.yLow} ${bBox.xHigh - bBox.xLow} ${bBox.yHigh - bBox.yLow}`);
-
-		//find which annotations needs to be added to the ccanvas, some 
-		//indexing whould be used, for the moment we just iterate all of them.
-
-		for (let anno of this.annotations) {
-
-			//TODO check for class visibility and bbox culling (or maybe should go to prefetch?)
-			if (!anno.ready &amp;&amp; typeof anno.svg == 'string') {
-				let parser = new DOMParser();
-				let element = parser.parseFromString(anno.svg, "image/svg+xml").documentElement;
-				anno.elements = [...element.children]
-				anno.ready = true;
-
-				/*				} else if(this.svgXML) {
-									a.svgElement = this.svgXML.querySelector(`#${a.id}`);
-									if(!a.svgElement)
-										throw Error(`Could not find element with id: ${id} in svg`);
-								} */
-			}
-
-			if(this.annotationUpdate)
-    				this.annotationUpdate(anno, transform);
-
-			if (!anno.needsUpdate)
-				continue;
-
-			anno.needsUpdate = false;
-
-			for (let e of this.svgGroup.querySelectorAll(`[data-annotation="${anno.id}"]`))
-				e.remove();
-
-			if (!anno.visible)
-				continue;
-
-			//second time will be 0 elements, but we need to 
-			//store somewhere knowledge of which items in the scene and which still not.
-			for (let child of anno.elements) {
-				let c = child; //.cloneNode(true);
-				c.setAttribute('data-annotation', anno.id);
-				c.setAttribute('data-class', anno.class);
-
-				//c.setAttribute('data-layer', this.id);
-				c.classList.add('openlime-annotation');
-				if (this.selected.has(anno.id))
-					c.classList.add('selected');
-				this.svgGroup.appendChild(c);
-				c.onpointerdown = (e) => {
-					if (e.button == 0) {
-						e.preventDefault();
-						e.stopPropagation();
-						if (this.onClick &amp;&amp; this.onClick(anno))
-							return;
-						if (this.selected.has(anno.id))
-							return;
-						this.clearSelected();
-						this.setSelected(anno, true);
-					}
-				}
+            result = true;
+            e.preventDefault();
+        } 
+        
+        return result;
+    }
 
 
-				//utils
+    
+    /**
+     * Start zoom operation clicking on lens border. Call it at start of pointerdown event on lens border
+     * @param {*} pe pixel position in CanvasHtml
+     */
+     zoomStart(pe) {
+         if (!this.lensLayer.visible) return;
 
-				/*				let parser = new DOMParser();
-								let use = createElement('use', { 'xlink:href': '#' + a.id,  'stroke-width': 10,  'pointer-events': 'stroke' });
-								//let use = parser.parseFromString(`&lt;use xlink:href="${a.id}" stroke-width="10" pointer-events="stroke"/>`, "image/svg+xml");
-								this.svgGroup.appendChild(use);  */
-			}
-		}
+        this.zooming = true;
+        this.oldCursorPos = pe; // Used by derived class
+        const p = this.getScenePosition(pe);
+        const lens = this.getFocus();
+        const r = lens.radius;
+        const c = lens.position;
+        let v = {x: p.x-c.x, y: p.y-c.y};
+        let d = Math.sqrt(v.x*v.x + v.y*v.y);
+
+        // Difference between radius and |Click-LensCenter| will be used by zoomMove
+        this.deltaR = d - r;
+    }
+
+    /**
+     * Zoom dragging lens border. Call it during pointermove event on lens border
+     * @param {*} pe pixel position CanvasHTml
+     */
+     zoomMove(pe) {
+        if (this.zooming) {
+            const p = this.getScenePosition(pe);
+
+            const lens = this.getFocus();
+            const c = lens.position;
+            let v = {x: p.x-c.x, y: p.y-c.y};
+            let d = Math.sqrt(v.x*v.x + v.y*v.y);
+
+            //  Set as new radius |Click-LensCenter|(now) - |Click-LensCenter|(start)
+            const scale = this.camera.getCurrentTransform(performance.now()).z; 
+            const radiusRange = FocusContext.getRadiusRangeCanvas(this.camera.viewport);
+            const newRadius = Math.max(radiusRange.min / scale, d - this.deltaR);
+
+            this.lensLayer.setRadius(newRadius, this.zoomDelay);
+        }
+    }
+
+    /**
+     * End of zoom operation on lens border
+     */
+    zoomEnd() {
+        this.zooming = false;
+    }
+
+    getFocus() {
+        const p = this.lensLayer.getCurrentCenter();
+        const r = this.lensLayer.getRadius();
+        return  {position: p, radius: r}
+    }
+
+    isInsideLens(p) {
+        const c = this.lensLayer.getCurrentCenter();
+        const dx = p.x - c.x;
+        const dy = p.y - c.y;
+        const d  = Math.sqrt(dx*dx + dy*dy);
+        const r = this.lensLayer.getRadius();
+        const inside = d &lt; r;
+
+        const t = this.camera.getCurrentTransform(performance.now());
+        const b = this.lensLayer.getBorderWidth() / t.z;
+        const border = inside &amp;&amp; d > r-b;
+        //console.log("IsInside " + d.toFixed(0) + " r " + r.toFixed(0) + ", b " + b.toFixed(0) + " IN " + inside + " B " + border);
+        return {inside:inside, border:border};
+    }
+
+    /**
+     * Convert position from CanvasHtml to Viewport
+     * @param {*} e contain offsetX,offsetY position in CanvasHtml (0,0 top,left, y Down)
+     * @returns Position in Viewport (0,0 at bottom,left, y Up)
+     */
+    getPixelPosition(e) {
+        const p = {x: e.offsetX, y: e.offsetY};
+        return CoordinateSystem.fromCanvasHtmlToViewport(p, this.camera, this.useGL);
+    }
+
+    /**
+     * Convert position from CanvasHtml to Scene
+     * @param {*} e must contain offsetX,offsetY position in CanvasHtml (0,0 top,left, y Down)
+     * @returns Point in Scene coordinates (0,0 at center, y Up)
+     */
+	getScenePosition(e) {
+        const p = {x: e.offsetX, y: e.offsetY};
+        return CoordinateSystem.fromCanvasHtmlToScene(p, this.camera, this.useGL);
+    }
+
+	distance(e1, e2) {
+		return Math.sqrt(Math.pow(e1.x - e2.x, 2) + Math.pow(e1.y - e2.y, 2));
 	}
 }
 
-Layer.prototype.types['svg_annotations'] = (options) => { return new LayerSvgAnnotation(options); }
-
-export { LayerSvgAnnotation }
-
-</pre>
+export { ControllerLens }</pre>
     </article>
 </section>
 

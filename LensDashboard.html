@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>OpenLIME Class: UIDialog</title>
+	<title>OpenLIME Class: LensDashboard</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -88,18 +88,19 @@
 		<div id="main">
 			
 
-	<h1 class="page-title">Class: UIDialog</h1>
+	<h1 class="page-title">Class: LensDashboard</h1>
 <section>
 
 <header>
     
         <h2>
-        UIDialog
+        LensDashboard
         </h2>
         
-            <div class="class-description"><p>A <strong>UIDialog</strong> is a top-level window used for communications with the user. It may be modal or modeless.
-The content of the dialog can be either an HTML text or a pre-built DOM element.
-When hidden, a dialog emits a 'closed' event.</p></div>
+            <div class="class-description"><p>The LensDashboard class is an optional element that can be embedded in an instance of <a href="LayerLens.html">LayerLens</a>.
+It represents a square HTML container of sufficient size to hold the lens that is positioned solidly against it.
+Its main use is to allow the creation of a dashboard of HTML elements positioned around the lens.</p>
+<p>In the example below a simple HTML button is positioned close to the top-left corner of the dashboard:</p></div>
         
     
 </header>
@@ -111,7 +112,7 @@ When hidden, a dialog emits a 'closed' event.</p></div>
         
 <hr>
 <dt>
-    <h4 class="name" id="UIDialog"><span class="type-signature"></span>new UIDialog(container [, options])</h4>
+    <h4 class="name" id="LensDashboard"><span class="type-signature"></span>new LensDashboard(options)</h4>
     
     
 </dt>
@@ -119,7 +120,9 @@ When hidden, a dialog emits a 'closed' event.</p></div>
 
     
     <div class="description">
-        <p>Instatiates a UIDialog object.</p>
+        <p>Manages creation and update of a lens dashboard.
+An object literal with Layer <code>options</code> can be specified.
+This class instatiates an optional element of <a href="LayerLens.html">LayerLens</a></p>
     </div>
     
 
@@ -142,8 +145,6 @@ When hidden, a dialog emits a 'closed' event.</p></div>
         <th>Type</th>
 
         
-        <th>Argument</th>
-        
 
         
 
@@ -152,38 +153,6 @@ When hidden, a dialog emits a 'closed' event.</p></div>
     </thead>
 
     <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>container</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">HTMLElement</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>The HTMLElement on which the dialog is focused</p></td>
-        </tr>
-
     
 
         <tr>
@@ -202,20 +171,10 @@ When hidden, a dialog emits a 'closed' event.</p></div>
             </td>
 
             
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
 
             
 
-            <td class="description last"><p>An object literal with UIDialog parameters.</p>
+            <td class="description last"><p>An object literal with Lensdashboard parameters.</p>
                 <h6 class="method-params-label method-subparams-label">Properties</h6>
                 
 
@@ -231,6 +190,8 @@ When hidden, a dialog emits a 'closed' event.</p></div>
         
 
         
+        <th>Default</th>
+        
 
         <th class="last">Description</th>
     </tr>
@@ -241,13 +202,13 @@ When hidden, a dialog emits a 'closed' event.</p></div>
 
         <tr>
             
-                <td class="name"><code>modal</code></td>
+                <td class="name"><code>borderWidth</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">bool</span>
+<span class="param-type">number</span>
 
 
 
@@ -257,8 +218,14 @@ When hidden, a dialog emits a 'closed' event.</p></div>
             
 
             
+                <td class="default">
+                
+                    30
+                
+                </td>
+            
 
-            <td class="description last"><p>Whether the dialog is modal.</p></td>
+            <td class="description last"><p>The extra border thickness (in pixels) around the square including the lens.</p></td>
         </tr>
 
     
@@ -309,8 +276,8 @@ When hidden, a dialog emits a 'closed' event.</p></div>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="UIBasic.js.html">UIBasic.js</a>,
-				 <a href="UIBasic.js.html#sunlight-1-line-670">line 670</a>
+				<a href="LensDashboard.js.html">LensDashboard.js</a>,
+				 <a href="LensDashboard.js.html#sunlight-1-line-49">line 49</a>
 			</li>
 		</ul>
 	</dd>
@@ -335,6 +302,32 @@ When hidden, a dialog emits a 'closed' event.</p></div>
     
 
     
+
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">const lensDashboard = new OpenLIME.LensDashboard(lime);
+const lensLayer = new OpenLIME.Layer({
+type: &quot;lens&quot;,
+layers: [layerIn],
+		camera: lime.camera,
+		radius: 200,
+		border: 10,
+		dashboard: lensDashboard,
+		visible: true
+});
+lime.addLayer(&#x27;lens&#x27;, lensLayer);
+ 
+const btn = document.createElement(&#x27;button&#x27;);
+btn.innerHTML = &quot;Click Me&quot;;
+btn.style = &#x60;position: absolute;  
+				left: 0px; 
+				top: 0px;
+				display: inline-block; 
+				cursor: pointer;
+				pointer-events: auto;&#x60;;
+lensDashboard.append(btn);</pre>
+
 
     
 </dd>
@@ -361,7 +354,7 @@ When hidden, a dialog emits a 'closed' event.</p></div>
             
 <hr>
 <dt>
-    <h4 class="name" id="fade"><span class="type-signature"></span>fade(on)</h4>
+    <h4 class="name" id="append"><span class="type-signature"></span>append(elm)</h4>
     
     
 </dt>
@@ -369,7 +362,7 @@ When hidden, a dialog emits a 'closed' event.</p></div>
 
     
     <div class="description">
-        <p>Adds fading effect to the dialog.</p>
+        <p>Appends a HTML element to the dashboard. The element must be positioned in 'absolute' mode.</p>
     </div>
     
 
@@ -404,13 +397,13 @@ When hidden, a dialog emits a 'closed' event.</p></div>
 
         <tr>
             
-                <td class="name"><code>on</code></td>
+                <td class="name"><code>elm</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">bool</span>
+<span class="param-type">*</span>
 
 
 
@@ -421,7 +414,7 @@ When hidden, a dialog emits a 'closed' event.</p></div>
 
             
 
-            <td class="description last"><p>Whether the fading effect is enabled.</p></td>
+            <td class="description last"><p>A HTML element</p></td>
         </tr>
 
     
@@ -465,8 +458,8 @@ When hidden, a dialog emits a 'closed' event.</p></div>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="UIBasic.js.html">UIBasic.js</a>,
-				 <a href="UIBasic.js.html#sunlight-1-line-767">line 767</a>
+				<a href="LensDashboard.js.html">LensDashboard.js</a>,
+				 <a href="LensDashboard.js.html#sunlight-1-line-227">line 227</a>
 			</li>
 		</ul>
 	</dd>
@@ -499,7 +492,7 @@ When hidden, a dialog emits a 'closed' event.</p></div>
             
 <hr>
 <dt>
-    <h4 class="name" id="hide"><span class="type-signature"></span>hide()</h4>
+    <h4 class="name" id="removeMaskFromSvgLayer"><span class="type-signature"></span>removeMaskFromSvgLayer(svg)</h4>
     
     
 </dt>
@@ -507,95 +500,7 @@ When hidden, a dialog emits a 'closed' event.</p></div>
 
     
     <div class="description">
-        <p>Hides the dialog.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="UIBasic.js.html">UIBasic.js</a>,
-				 <a href="UIBasic.js.html#sunlight-1-line-753">line 753</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="setContent"><span class="type-signature"></span>setContent(html)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Sets the content of the dialog.</p>
+        <p>Remove mask attribute from svg element</p>
     </div>
     
 
@@ -630,16 +535,13 @@ When hidden, a dialog emits a 'closed' event.</p></div>
 
         <tr>
             
-                <td class="name"><code>html</code></td>
+                <td class="name"><code>svg</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
-|
-
-<span class="param-type">HTMLElement</span>
+<span class="param-type">*</span>
 
 
 
@@ -650,7 +552,7 @@ When hidden, a dialog emits a 'closed' event.</p></div>
 
             
 
-            <td class="description last"><p>The content of the dialog (a HTML text or element).</p></td>
+            <td class="description last"><p>element from which remove the mask attribute</p></td>
         </tr>
 
     
@@ -694,8 +596,8 @@ When hidden, a dialog emits a 'closed' event.</p></div>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="UIBasic.js.html">UIBasic.js</a>,
-				 <a href="UIBasic.js.html#sunlight-1-line-735">line 735</a>
+				<a href="LensDashboard.js.html">LensDashboard.js</a>,
+				 <a href="LensDashboard.js.html#sunlight-1-line-219">line 219</a>
 			</li>
 		</ul>
 	</dd>
@@ -728,7 +630,7 @@ When hidden, a dialog emits a 'closed' event.</p></div>
             
 <hr>
 <dt>
-    <h4 class="name" id="show"><span class="type-signature"></span>show()</h4>
+    <h4 class="name" id="setBackgroundRenderingMode"><span class="type-signature"></span>setBackgroundRenderingMode(mode)</h4>
     
     
 </dt>
@@ -736,95 +638,7 @@ When hidden, a dialog emits a 'closed' event.</p></div>
 
     
     <div class="description">
-        <p>Shows the dialog.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="UIBasic.js.html">UIBasic.js</a>,
-				 <a href="UIBasic.js.html#sunlight-1-line-745">line 745</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="toggle"><span class="type-signature"></span>toggle(force)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Toggles the display of the dialog.</p>
+        <p>Set the background rendering mode within the lens.</p>
     </div>
     
 
@@ -859,13 +673,13 @@ When hidden, a dialog emits a 'closed' event.</p></div>
 
         <tr>
             
-                <td class="name"><code>force</code></td>
+                <td class="name"><code>mode</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">bool</span>
+<span class="param-type"><a href="global.html#RenderingMode">RenderingMode</a></span>
 
 
 
@@ -876,7 +690,7 @@ When hidden, a dialog emits a 'closed' event.</p></div>
 
             
 
-            <td class="description last"><p>Whether to turn the dialog into a one way-only operation.</p></td>
+            <td class="description last"><p>RenderingMode.draw or RenderingMode.hide</p></td>
         </tr>
 
     
@@ -920,8 +734,561 @@ When hidden, a dialog emits a 'closed' event.</p></div>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="UIBasic.js.html">UIBasic.js</a>,
-				 <a href="UIBasic.js.html#sunlight-1-line-775">line 775</a>
+				<a href="LensDashboard.js.html">LensDashboard.js</a>,
+				 <a href="LensDashboard.js.html#sunlight-1-line-243">line 243</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="setLayerSvgAnnotation"><span class="type-signature"></span>setLayerSvgAnnotation(l)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Call this to set the corresponding LayerSvgAnnotation</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>l</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="LayerSvgAnnotation.html">LayerSvgAnnotation</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="LensDashboard.js.html">LensDashboard.js</a>,
+				 <a href="LensDashboard.js.html#sunlight-1-line-148">line 148</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="setLensRenderingMode"><span class="type-signature"></span>setLensRenderingMode(mode)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Set rendering mode within the lens.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>mode</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#RenderingMode">RenderingMode</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>RenderingMode.draw or RenderingMode.hide</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="LensDashboard.js.html">LensDashboard.js</a>,
+				 <a href="LensDashboard.js.html#sunlight-1-line-235">line 235</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="setMaskOnSvgLayer"><span class="type-signature"></span>setMaskOnSvgLayer(svg)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Set mask property on the svg element which need to be displayed with the lens</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>svg</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>element which need to be displayed within the lens</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="LensDashboard.js.html">LensDashboard.js</a>,
+				 <a href="LensDashboard.js.html#sunlight-1-line-211">line 211</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="setupCircleInteraction"><span class="type-signature"></span>setupCircleInteraction(circle)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Setup the event listener to update lens radius by dragging lens border.
+Call the lens controller to update lens radius.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>circle</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>lens svg border.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="LensDashboard.js.html">LensDashboard.js</a>,
+				 <a href="LensDashboard.js.html#sunlight-1-line-97">line 97</a>
 			</li>
 		</ul>
 	</dd>
@@ -955,98 +1322,6 @@ When hidden, a dialog emits a 'closed' event.</p></div>
 
     
 
-    
-        <h3 class="subsection-title">Events</h3>
-
-        <dl>
-            
-<hr>
-<dt>
-    <h4 class="name" id="event:closed">closed</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>The event is fired when the dialog is closed.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="UIBasic.js.html">UIBasic.js</a>,
-				 <a href="UIBasic.js.html#sunlight-1-line-754">line 754</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-        </dl>
     
 </article>
 
