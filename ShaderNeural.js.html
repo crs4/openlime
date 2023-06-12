@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>OpenLIME Source: LayerRTI.js</title>
+	<title>OpenLIME Source: ShaderNeural.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -88,124 +88,221 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: LayerRTI.js</h1>
+		<h1 class="page-title">Source: ShaderNeural.js</h1>
     
 <section>
     <article>
         <pre
-            class="sunlight-highlight-javascript linenums">import { Layer }  from './Layer.js'
-import { Raster } from './Raster.js'
-import { ShaderRTI } from './ShaderRTI.js'
-import { Transform } from './Transform.js'
+            class="sunlight-highlight-javascript linenums">import { Shader } from './Shader.js'
 
 /**
- * Extends {@link Layer}, and can display a relightable images (RTI) using the 'relight' data format (see:
- * [relight on github]{@link https://github.com/cnr-isti-vclab/relight} for details).
- * This web-friendly format is composed of a info.json with RTI parametets and a set of images 
- * (plane_0.jpg, plane_1.jpg etc.) with encoded coefficients.
- * As with all other layers Deepzoom and other {@link Layout}s can be used.
- * 
- * The ligh direction can be changed programmatically using setLight.
- * 
- * @param {options} options Same as {@link Layer}, but url and layout are required.
- * **url**: points to a relight .json
- * **layout**: one of image, deepzoom, google, iiif, zoomify, tarzoom, itarzoom
- */
-
-class LayerRTI extends Layer {
+ * Extends {@link Shader}, initialized with a Neural .json (
+**/
+ 
+class ShaderNeural extends Shader {
 	constructor(options) {
-		super(options);
+		super({});
 
-		if(Object.keys(this.rasters).length != 0)
-			throw "Rasters options should be empty!";
+		Object.assign(this, {
+			modes: ['light'],
+			mode: 'light',
 
-		if(!this.url)
-			throw "Url option is required";
+			nplanes: null,	 //number of coefficient planes
 
-		this.shaders['rti'] = new ShaderRTI({ normals: this.normals });
-		this.setShader('rti');
+			scale: null,	  //factor and bias are used to dequantize coefficient planes.
+			bias: null,
 
-		this.addControl('light', [0, 0]);
-		this.worldRotation = 0; //if the canvas or ethe layer rotate, light direction neeeds to be rotated too.
-		
-		this.loadJson(this.url);
-	}
-/*
- *  Internal function to assemble the url needed to retrieve the image or the image tile.
- */
-	imageUrl(url, plane) {
-		let path = this.url.substring(0, this.url.lastIndexOf('/')+1);
-		switch(this.layout.type) {
-			case 'image':    return path + plane + '.jpg'; break;
-			case 'google':   return path + plane;          break;
-			case 'deepzoom': return path + plane + '.dzi'; break;
-			case 'tarzoom':  return path + plane + '.tzi'; break;
-			case 'itarzoom': return path + 'planes.tzi'; break;
-			case 'zoomify':  return path + plane + '/ImageProperties.xml'; break;
-			//case 'iip':      return this.plane.throw Error("Unimplemented");
-			case 'iiif': throw Error("Unimplemented");
-			default:     throw Error("Unknown layout: " + layout.type);
-		}
-	}
+		});
+		Object.assign(this, options);
 
-/*
- * Alias for setControl, changes light direction.
- * @param {Array} light light direction as an array [x, y]
- * @param {number} dt in ms, interpolation duration.
- */
-	setLight(light, dt) {
-		this.setControl('light', light, dt);
+		this.samplers = [
+			{ id:1, name:'u_texture_1', type:'vec3' },
+			{ id:2, name:'u_texture_2', type:'vec3' },
+			{ id:3, name:'u_texture_3', type:'vec3' }
+		];
+
+		this.uniforms = {
+			lights: { type: 'vec2', needsUpdate: true, size: 2, value: [0.0, 0.0] },
+			min:    { type: 'vec3', needsUpdate: true, size: 3, value: [0, 0, 0] },
+			max:    { type: 'vec3', needsUpdate: true, size: 3, value: [1, 1, 1] },
+			layer1_weights: { type: 'vec4', needsUpdate: true, size: this.c*this.n/4},
+			layer1_biases:  { type: 'vec4', needsUpdate: true, size: this.n/4},
+			layer2_weights: { type: 'vec4', needsUpdate: true, size: this.n*this.n/4},
+			layer2_biases:  { type: 'vec4', needsUpdate: true, size: this.n/4},
+			layer3_weights: { type: 'vec4', needsUpdate: true, size: this.n*3/4},
+			layer3_biases:  { type: 'vec3', needsUpdate: true, size: 1},
+		};
 	}
 
-	loadJson(url) {
-		(async () => {
-			var response = await fetch(this.url);
-			if(!response.ok) {
-				this.status = "Failed loading " + this.url + ": " + response.statusText;
-				return;
-			}
-			let json = await response.json();
-			this.shader.init(json);
-			let urls = [];
-			for(let p = 0; p &lt; this.shader.njpegs; p++) {
-				let url = this.layout.imageUrl(this.url, 'plane_' + p);
-				urls.push(url);
-				let raster = new Raster({ format: 'vec3'});
-				this.rasters.push(raster);
-			}
-			if(this.normals) { // ITARZOOM must include normals and currently has a limitation: loads the entire tile 
-				let url = this.layout.imageUrl(this.url, 'normals');
-				urls.push(url);
-				let raster = new Raster({ format: 'vec3'});
-				this.rasters.push(raster);				
-			}			
-			this.layout.setUrls(urls);
-
-		})().catch(e => { console.log(e); this.status = e; });
+	createProgram(gl) {
+		super.createProgram(gl);
+		this.position_location = gl.getAttribLocation(this.program, "a_position");
+		this.texcoord_location = gl.getAttribLocation(this.program, "a_texcoord");		
 	}
 
-/*
- *  Internal function: light control maps to light direction in the shader.
- */
-	interpolateControls() {
-		let done = super.interpolateControls();
-		if(!done) {
-			let light = this.controls['light'].current.value;
-			//this.shader.setLight(light);
-			let rotated = Transform.rotate(light[0], light[1], this.worldRotation*Math.PI);
-			this.shader.setLight([rotated.x, rotated.y]);
-		}
-		return done;
+	setLight(light) {
+		this.setUniform('lights', light);
 	}
-	draw(transform, viewport) {
-		this.worldRotation = transform.a + this.transform.a;
-		return super.draw(transform, viewport);
+
+	init() {
+		this.lightWeights([0, 0, 1], 'base');
 	}
+
+	setShaderInfo(samples, planes, n, c, colorspace) {
+		this.samples = samples;
+		this.planes = planes;
+		this.n = n;
+		this.c = c;
+		this.colorspace = colorspace;
+	}
+
+
+	vertShaderSrc(gl) {
+		return `#version 300 es
+in vec2 a_position;
+in vec2 a_texcoord;
+out vec2 v_texcoord;
+void main() {
+	gl_Position = vec4(a_position, 0.0, 1.0);
+	v_texcoord = a_texcoord;
+}`;
+	}
+	fragShaderSrc(gl) {
+		return `
+vec4 inputs[${this.c/4}];    // 12/4
+vec4 output1[${this.n/4}];  // 52/4
+vec4 output2[${this.n/4}];  // 52/4
+vec3 output3;
+
+in vec2 v_texcoord;
+uniform sampler2D u_texture_1;
+uniform sampler2D u_texture_2;
+uniform sampler2D u_texture_3;
+uniform vec2 lights;
+
+uniform vec4 layer1_weights[${this.c*this.n/4}]; // 12*52/4
+uniform vec4 layer1_biases[${this.n/4}];  // 52/4
+uniform vec4 layer2_weights[${this.n*this.n/4}]; // 52*52/4
+uniform vec4 layer2_biases[${this.n/4}];  // 52/4
+uniform vec4 layer3_weights[${this.n*3/4}];  // 52*3/4
+uniform vec3 layer3_biases;
+
+uniform vec3 min[${this.planes/3}];
+uniform vec3 max[${this.planes/3}];
+
+float elu(float a){
+	return (a > 0.0) ? a : (exp(a) - 1.0);
 }
 
-Layer.prototype.types['rti'] = (options) => { return new LayerRTI(options); }
 
-export { LayerRTI }
+vec4 relightCoeff(vec3 color_1, vec3 color_2, vec3 color_3) {
+	// Rescaling features
+    color_1 = color_1 * (max[0] - min[0]) + min[0];
+    color_2 = color_2 * (max[1] - min[1]) + min[1];
+    color_3 = color_3 * (max[2] - min[2]) + min[2];
+
+	// building input
+	inputs[0] = vec4(color_1, color_2.x);
+	inputs[1] = vec4(color_2.yz, color_3.xy);
+	inputs[2] = vec4(color_3.z, lights, 0.0);
+
+	float sum = 0.0;
+
+	// layer 1 - 11 x 49
+	for (int i=0; i &lt; ${this.n}; i++){
+		sum = 0.0;
+		for (int j=0; j &lt; ${this.c/4}; j++){
+			sum += dot(inputs[j], layer1_weights[${this.c/4}*i+j]);
+		}
+		output1[i/4][i%4] = elu(sum + layer1_biases[i/4][i%4]);
+	}
+	
+	// layer 2 - 49 x 49
+	for (int i=0; i &lt; ${this.n}; i++){
+		sum = 0.0;
+		for (int j=0; j &lt; ${this.n/4}; j++){
+			sum += dot(output1[j], layer2_weights[${this.n/4}*i+j]);
+		}
+		output2[i/4][i%4] = elu(sum + layer2_biases[i/4][i%4]);
+	}
+
+	// layer 3 - 49 x 3
+	for (int i=0; i &lt; 3; i++){
+		sum = 0.0;
+		for (int j=0; j &lt; ${this.n/4}; j++){
+			sum += dot(output2[j], layer3_weights[${this.n/4}*i+j]);
+		}
+		output3[i] = sum + layer3_biases[i];
+	}
+	return vec4(output3.${this.colorspace}, 1.0);
+}
+
+vec4 relight(vec2 v) {
+	vec3 color_1 = texture(u_texture_1, v).${this.colorspace};
+	vec3 color_2 = texture(u_texture_2, v).${this.colorspace};
+	vec3 color_3 = texture(u_texture_3, v).${this.colorspace};
+	return relightCoeff(color_1, color_2, color_3);
+}
+
+
+vec4 data() {
+	return relight(v_texcoord);
+}
+vec4 data1() {
+	vec2 uv = v_texcoord;
+	bool showDiff = false;
+	bool showA = false;
+	if(v_texcoord.x > 0.5) {
+		showDiff = true;
+		uv.x -= 0.5;
+	}
+	if(v_texcoord.y > 0.5) {
+		showA = true;
+		uv.y -= 0.5;
+	}
+	vec2 o = floor(uv*128.0)/128.0;
+	float step = 1.0/256.0;
+
+	vec4 a = vec4(0, 0, 0, 0);
+	vec3 color_1 = vec3(0, 0, 0);
+	vec3 color_2 = vec3(0, 0, 0);
+	vec3 color_3 = vec3(0, 0, 0);
+
+	for(float y = 0.0; y &lt;= step; y = y + step) {
+		for(float x = 0.0; x &lt;= step; x = x + step) {
+			vec2 d = o + vec2(x, y);
+			a += 0.25*relight(d);
+
+			color_1 += texture(u_texture_1, d).${this.colorspace};
+			color_2 += texture(u_texture_2, d).${this.colorspace};
+			color_3 += texture(u_texture_3, d).${this.colorspace};
+		}
+	}
+	vec4 b = relightCoeff(0.25*color_1, 0.25*color_2, 0.25*color_3);
+	float diff = 255.0*length((a - b).xyz);
+	if(showDiff) {
+		if(diff &lt; 10.0) {
+			return vec4(0.0, 0.0, 0.0, 1.0);
+		} else if (diff &lt; 20.0) {
+			return vec4(0.0, 0.0, 1.0, 1.0);
+		} else if(diff &lt; 40.0) {
+			return vec4(0.0, 1.0, 0.0, 1.0);
+		} else
+			return vec4(1.0, 0.0, 0.0, 1.0);
+	} 
+	if(showA)
+		return a;
+	return b;
+}
+
+		`;
+	}
+
+}
+
+
+export { ShaderNeural }
+
 </pre>
     </article>
 </section>

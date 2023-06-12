@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>OpenLIME Source: LayerRTI.js</title>
+	<title>OpenLIME Source: ShaderFilter.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -88,125 +88,168 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: LayerRTI.js</h1>
+		<h1 class="page-title">Source: ShaderFilter.js</h1>
     
 <section>
     <article>
         <pre
-            class="sunlight-highlight-javascript linenums">import { Layer }  from './Layer.js'
-import { Raster } from './Raster.js'
-import { ShaderRTI } from './ShaderRTI.js'
-import { Transform } from './Transform.js'
+            class="sunlight-highlight-javascript linenums">class ShaderFilter {
+    constructor(options) {
+        options = Object.assign({
+        }, options);
+        Object.assign(this, options);
+        this.name = this.constructor.name;
+        this.uniforms = {};
+        this.samplers = [];
+        this.needsUpdate = true;
+        this.shader = null;
 
-/**
- * Extends {@link Layer}, and can display a relightable images (RTI) using the 'relight' data format (see:
- * [relight on github]{@link https://github.com/cnr-isti-vclab/relight} for details).
- * This web-friendly format is composed of a info.json with RTI parametets and a set of images 
- * (plane_0.jpg, plane_1.jpg etc.) with encoded coefficients.
- * As with all other layers Deepzoom and other {@link Layout}s can be used.
- * 
- * The ligh direction can be changed programmatically using setLight.
- * 
- * @param {options} options Same as {@link Layer}, but url and layout are required.
- * **url**: points to a relight .json
- * **layout**: one of image, deepzoom, google, iiif, zoomify, tarzoom, itarzoom
- */
+        this.modes = {};
+    }
 
-class LayerRTI extends Layer {
-	constructor(options) {
-		super(options);
+    setMode(mode, id) {
+        if (!this.shader)
+            throw Error("Shader not registered");
 
-		if(Object.keys(this.rasters).length != 0)
-			throw "Rasters options should be empty!";
+        if (Object.keys(this.modes).length > 0) {
+            const list = this.modes[mode];
+            if (list) {
+                list.map(a => {
+                    a.enable = a.id == id;
+                });
+                this.shader.needsUpdate = true;
+            } else {
+                throw Error(`Mode "${mode}" not exist!`);
+            }
+        }
+    }
 
-		if(!this.url)
-			throw "Url option is required";
+    // Callback in Shader.js
+    prepare(gl) {
+        if (this.needsUpdate)
+            if (this.createTextures) this.createTextures(gl);
+        this.needsUpdate = false;
+    }
 
-		this.shaders['rti'] = new ShaderRTI({ normals: this.normals });
-		this.setShader('rti');
+    // Callback to create textures for samplers
+    // async createTextures(gl) {
+    // }
 
-		this.addControl('light', [0, 0]);
-		this.worldRotation = 0; //if the canvas or ethe layer rotate, light direction neeeds to be rotated too.
-		
-		this.loadJson(this.url);
-	}
-/*
- *  Internal function to assemble the url needed to retrieve the image or the image tile.
- */
-	imageUrl(url, plane) {
-		let path = this.url.substring(0, this.url.lastIndexOf('/')+1);
-		switch(this.layout.type) {
-			case 'image':    return path + plane + '.jpg'; break;
-			case 'google':   return path + plane;          break;
-			case 'deepzoom': return path + plane + '.dzi'; break;
-			case 'tarzoom':  return path + plane + '.tzi'; break;
-			case 'itarzoom': return path + 'planes.tzi'; break;
-			case 'zoomify':  return path + plane + '/ImageProperties.xml'; break;
-			//case 'iip':      return this.plane.throw Error("Unimplemented");
-			case 'iiif': throw Error("Unimplemented");
-			default:     throw Error("Unknown layout: " + layout.type);
-		}
-	}
+    // Constant (modes) declarations in shader program 
+    fragModeSrc() {
+        let src = '';
+        for (const key of Object.keys(this.modes)) {
+            for (const e of this.modes[key]) {
+                if (e.enable) {
+                    src += e.src + '\n';
+                }
+            }
+        }
+        return src;
+    }
 
-/*
- * Alias for setControl, changes light direction.
- * @param {Array} light light direction as an array [x, y]
- * @param {number} dt in ms, interpolation duration.
- */
-	setLight(light, dt) {
-		this.setControl('light', light, dt);
-	}
+    /**
+	 * Sets the value of a uniform variable.
+	 * @param {string} name The name of the uniform variable (it will be converted with the unique filter name).
+	 * @param {*} value The value to assign.
+	 */
+    setUniform(name, value) {
+        if(!this.shader) {
+            throw Error(`Shader not registered`);
+        }
+        this.shader.setUniform(this.uniformName(name), value);
+    }
 
-	loadJson(url) {
-		(async () => {
-			var response = await fetch(this.url);
-			if(!response.ok) {
-				this.status = "Failed loading " + this.url + ": " + response.statusText;
-				return;
-			}
-			let json = await response.json();
-			this.shader.init(json);
-			let urls = [];
-			for(let p = 0; p &lt; this.shader.njpegs; p++) {
-				let url = this.layout.imageUrl(this.url, 'plane_' + p);
-				urls.push(url);
-				let raster = new Raster({ format: 'vec3'});
-				this.rasters.push(raster);
-			}
-			if(this.normals) { // ITARZOOM must include normals and currently has a limitation: loads the entire tile 
-				let url = this.layout.imageUrl(this.url, 'normals');
-				urls.push(url);
-				let raster = new Raster({ format: 'vec3'});
-				this.rasters.push(raster);				
-			}			
-			this.layout.setUrls(urls);
+    // Sampler declarations in shader program 
+    fragSamplerSrc() {
+        let src = '';
+        for (let s of this.samplers) {
+            src += `
+            uniform sampler2D ${s.name};`;
+        }
+        return src;
+    }
 
-		})().catch(e => { console.log(e); this.status = e; });
-	}
+    // Uniform declarations in shader program 
+    fragUniformSrc() {
+        let src = '';
+        for (const [key, value] of Object.entries(this.uniforms)) {
+            src += `
+            uniform ${this.uniforms[key].type} ${key};`;
+        }
+        return src;
+    }
 
-/*
- *  Internal function: light control maps to light direction in the shader.
- */
-	interpolateControls() {
-		let done = super.interpolateControls();
-		if(!done) {
-			let light = this.controls['light'].current.value;
-			//this.shader.setLight(light);
-			let rotated = Transform.rotate(light[0], light[1], this.worldRotation*Math.PI);
-			this.shader.setLight([rotated.x, rotated.y]);
-		}
-		return done;
-	}
-	draw(transform, viewport) {
-		this.worldRotation = transform.a + this.transform.a;
-		return super.draw(transform, viewport);
-	}
+    fragDataSrc(gl) {
+        return null;
+    }
+
+    functionName() {
+        return this.name + "_data";
+    }
+
+    samplerName(name) {
+        return `${this.name}_${name}`;
+    }
+
+    uniformName(name) {
+        return `u_${this.name}_${name}`;
+    }
+
+    modeName(name) {
+        return `m_${this.name}_${name}`;
+    }
+
+    getSampler(name) {
+        const samplername = this.samplerName(name);
+        return this.samplers.find(e => e.name == samplername);
+    }
 }
 
-Layer.prototype.types['rti'] = (options) => { return new LayerRTI(options); }
+class ShaderFilterTest extends ShaderFilter {
+    constructor(options) {
+        super(options);
+        this.uniforms[this.uniformName('nodata_col')] = { type: 'vec4', needsUpdate: true, size: 4, value: [1, 1, 0, 1] };
+    }
 
-export { LayerRTI }
-</pre>
+    fragDataSrc(gl) {
+        return `
+            vec4 ${this.functionName()}(vec4 col){
+                return col.a > 0.0 ? col : ${this.uniformName('nodata_col')};
+            }`;
+    }
+}
+
+class ShaderFilterOpacity extends ShaderFilter {
+    constructor(opacity, options) {
+        super(options);
+        this.uniforms[this.uniformName('opacity')] = { type: 'float', needsUpdate: true, size: 1, value: opacity };
+    }
+
+    fragDataSrc(gl) {
+        return `
+            vec4 ${this.functionName()}(vec4 col){
+                return vec4(col.rgb, col.a * ${this.uniformName('opacity')});
+            }`;
+    }
+}
+
+class ShaderGammaFilter extends ShaderFilter {
+    constructor(options) {
+        super(options);
+        this.uniforms[this.uniformName('gamma')] = { type: 'float', needsUpdate: true, size: 1, value: 2.2 };
+    }
+
+    fragDataSrc(gl) {
+        return `
+            vec4 ${this.functionName()}(vec4 col){
+                float igamma = 1.0/${this.uniformName('gamma')};
+                return vec4(pow(col.r, igamma), pow(col.g, igamma), pow(col.b, igamma), col.a);
+            }`;
+    }
+}
+
+export { ShaderFilter, ShaderFilterTest, ShaderFilterOpacity, ShaderGammaFilter }</pre>
     </article>
 </section>
 
